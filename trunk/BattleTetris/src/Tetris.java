@@ -1,6 +1,67 @@
+/** Tetris.java
+ * 
+ * Variables:
+ * 	MyBoundedEnv env, env2
+ * 		env stores the entire board's state.
+ * 		env2 stores the upcoming Tetrad
+ * 	BlockDisplay display, display2
+ * 		display shows env
+ * 		display2 shows env2
+ * 	Tetrad rad, rad2
+ * 		rad is the currently active Tetrad.
+ * 			Manipulate this with the arrow keys. (or WASD)
+ * 		rad2 is the upcoming Tetrad
+ * 	int score
+ * 		How many points you've gotten in this game. We will not go into the scoring system.
+ * 		Increase by:
+ * 			pressing down
+ * 			getting a new block
+ * 			clearing rows. More rows leads to a lot more points.
+ * 	int level
+ * 		Determines how fast the game will run. At lvl 100, there is no delay as the Tetrad falls.
+ * 		Your level approximately solves level * level * 1000 = score 
+ * 	int rowsMoved
+ * 		keeps track of how many rows the current piece has moved.
+ * 		(This information is not very important.)
+ * 		Is set to some negative value in order to trigger Game Over.
+ * 	boolean paused
+ * 		when paused, no commands are accepted.
+ * 		press P to unpause
+ * 
+ * 
+ * How it plays:
+ * 	while(!notLost())
+ * 		play();
+ * 
+ * 	notLost() just checks if rowsMoved is negative or not.
+ * 		rowsMoved is only set to a negative number upon losing; when a new Tetrad overlaps
+ * 			with other pieces on the board.
+ * 
+ * 	play()
+ * 		moves the current Tetrad down a row.
+ * 		If it can't, it releases the tetrad and attempts to clear rows.
+ * 		If r rows are cleared, blocks above are moved down by r rows
+ * 		Additionally, if an opponent exists, opp.increasePendingRows(r - 1)
+ * 
+ * 		Swap out the current one for the coming one and take a new Tetrad
+ * 			If the new tetrad overlaps, then set rowsMoved = -1, so that notLost() => false
+ * 		Now that you're done with your movement, addPendingRows() that your opponent may have sent.
+ * 			addPendingRows just adds the requisite number of rows from the bottom up, missing 1 tile
+ * 		After adding them, resetPendingRows(), resets the variable, pendingRows, to 0.
+ * 
+ * restart()
+ * 		clears the board of all pieces, and resets chosen Tetrads
+ * 
+ * act()
+ * 		moves the active Tetrad based on keys currently being pressed.
+ * 		(those keys have their corresponding arrows[] variable set to true)
+ * 
+ * is an ArrowListener
+ * 	arrows are handled very straightforwardly.
+ * 
+ */
+
 import java.awt.*;
-import java.awt.event.*;
-import javax.swing.*;
 
 // Used to display the contents of a game board
 public class Tetris implements ArrowListener

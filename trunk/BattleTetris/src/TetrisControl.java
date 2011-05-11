@@ -1,7 +1,30 @@
+/** TetrisControl.java
+ * 
+ * TetrisControl sets up two subordinate Tetris instances, setting them as opponents.
+ * TetrisControl handles the timing and synchronization of the Tetris games using INTERVAL.
+ * 	Every factor * INTERVAL milliseconds, both Tetris instances are asked to 'play()'
+ * 	Every INTERVAL milliseconds, the Tetris instances, are asked to 'act()' instead based on
+ * 		keyboard input. (Like the (s or) down button being held)
+ * 
+ *	Upon being created, a TetrisControl calls run():
+ *		run(): starts up a game of Battle Tetris. Pieces are setup and game begins paused.
+ *			Upon starting, the game loops forever until one side loses.
+ *			Each loop calls play()
+ *
+ *		play(): Pauses for an INTERVAL before calling act() on each Tetris.
+ *				After factor (where factor is a constant between 5 to 10) * INTERVAL ms,
+ *					play() is called on each Tetris instance in a random (fair) order.
+ *				Factor is reduced from 10 to 5 gradually as time passes, to speed up gameplay.
+ *
+ *	TetrisControl's main:
+ *		resets the game every 10 seconds, by pausing and calling restart() and run()
+ *
+ *		restart(): Clears the Tetris instances of their boards and readies a new round of
+ *					Battle Tetris
+ * 
+ */
+
 import java.awt.*;
-import java.awt.event.*;
-import javax.swing.*;
-import java.applet.*;
 
 // Used to display the contents of a game board
 public class TetrisControl implements ArrowListener
@@ -10,8 +33,6 @@ public class TetrisControl implements ArrowListener
 
 	private Tetris player;
 	private Tetris opp;
-	private boolean enterPressed=false;
-	private boolean spacePressed=false;
 	private BlockDisplay play;
 	private boolean paused;
 	private boolean started=false;
@@ -41,10 +62,6 @@ public class TetrisControl implements ArrowListener
 		player.setLocationEnvBottom(800,160);
 		player.setOpponent(opp);
 		opp.setOpponent(player);
-		//player.newTriad();
-		//opp.newTriad();
-		//player.updateAll();
-		//opp.updateAll();
 
 
 		play=new BlockDisplay(env);
@@ -61,6 +78,7 @@ public class TetrisControl implements ArrowListener
 		else
 			play.setTitle("Left: "+player.counter()/TriadTowers.DROPRATIO+" TriadTowers Input Module: "+"Right: "+opp.counter()/TriadTowers.DROPRATIO);
 */	}
+	
 	public static void pause(int wait)
 	{
 		try
@@ -76,22 +94,7 @@ public class TetrisControl implements ArrowListener
 		paused=true;
 		player.pPressed();
 		opp.pPressed();
-		enterPressed=false;
-		spacePressed=false;
-//		player.update();
-//		opp.update();
-		/*while(!started&&time>0)
-		{
-			play.setTitle("TriadTowers Input Module: "+" Character Select "+time/1000);
-			int wait=250;
-			pause(wait);
-			time-=wait;
-			if(enterPressed&&spacePressed)
-				started=true;
-		}*/
 		started = true;
-		enterPressed=true;
-		spacePressed=true;
 		startTime=0;
 		boolean pNotLost=true;
 		boolean oNotLost=true;
@@ -103,15 +106,7 @@ public class TetrisControl implements ArrowListener
 			else
 			{
 				started=true;
-				/*if(startTime!=0&&startTime%60000==0&&startTime<300000)
-					System.out.println("\n\n\n*****<<<<<Speeding up!!!>>>>>*****\n\n\n");
-				if(startTime==300000)
-					System.out.println("\n\n\n*****<<<<<Beware! No more defense!!! Double Time!>>>>>*****\n\n\n");
-				if(startTime>=300000)
-				{
-//					player.setDefense(false);
-//					opp.setDefense(false);
-				}*/
+				
 				pNotLost=player.notLost();
 				oNotLost=opp.notLost();
 //				player.updateAll();
@@ -141,22 +136,75 @@ public class TetrisControl implements ArrowListener
 //		player.printStats("Right side player");
 		System.out.println("Time spent: "+startTime/1000+" seconds");
 	}
-	public static void main(String[] args)
+	public void play()
 	{
-		TetrisControl game=new TetrisControl();
-		while(true)
+		try
 		{
-			try
+			if(paused)
 			{
-				Thread.sleep(10000);
+				Thread.sleep(1000);
 			}
-			catch(Exception e)
+			else
 			{
+				int timeWait=INTERVAL;
+				
+				// As time passes, the game goes faster.
+				int factor = 10;
+				if(startTime>=60000)
+					factor=9;
+				if(startTime>=120000)
+					factor=8;
+				if(startTime>=180000)
+					factor=7;
+				if(startTime>=240000)
+					factor=6;
+				if(startTime>=300000)
+					factor=5;
+				
+				player.act();
+				opp.act();
+
+				// the Tetris board only moves every 'factor' INTERVALs of time.
+				if (startTime % (factor * INTERVAL) == 0)
+				{
+					if(Math.random()>.5)//for fairness
+					{
+						player.play();
+						opp.play();
+					}
+					else
+					{
+						opp.play();
+						player.play();
+					}
+				}
+				update();
+
+				Thread.sleep(timeWait);
+				startTime+=timeWait;
 			}
-			game.restart();
-			game.run();
+		}
+		catch(InterruptedException e)
+		{
 		}
 	}
+	
+	/* Reset the game boards */
+	public void restart()
+	{
+		started=false;
+		player.setOpponent(opp);
+		opp.setOpponent(player);
+		player.restart();
+		opp.restart();
+		//player.updateAll();
+		//opp.updateAll();
+		startTime=0;
+		//player.setDefense(true);
+		//opp.setDefense(true);
+	}
+	
+
 	public void leftPressed()
 	{
 		if(!paused)
@@ -179,18 +227,7 @@ public class TetrisControl implements ArrowListener
 	}
 	public void upPressed()
 	{
-		if(!started&&!enterPressed)
-		{
-/*			oppOfLeft++;
-			if(oppOfLeft>=DropPattern.NUMCHARACTERS)
-				oppOfLeft=0;
-			opp.setCharacterID(oppOfLeft);
-			player.setCharacterID(oppOfRight);
-			player.update();
-			opp.update();*/
-		}
-		else
-			if(!paused)
+		if(!paused)
 				player.upPressed();
 	}
 	public void downPressed()//unused as of the 3rd update
@@ -201,8 +238,6 @@ public class TetrisControl implements ArrowListener
 	public void pPressed()
 	{
 		paused=!paused;
-		enterPressed=true;
-		spacePressed=true;
 		update();
 		player.pPressed();
 		opp.pPressed();
@@ -211,7 +246,7 @@ public class TetrisControl implements ArrowListener
 	{
 		if(!started)
 		{
-			spacePressed=true;
+			//spacePressed=true;
 			//opp.penalty();
 		}
 	}
@@ -219,24 +254,9 @@ public class TetrisControl implements ArrowListener
 	{
 		if(!started)
 		{
-			enterPressed=true;
+			//enterPressed=true;
 			//player.penalty();
 		}
-	}
-	public void restart()
-	{
-		started=false;
-		player.setOpponent(opp);
-		opp.setOpponent(player);
-		player.restart();
-		opp.restart();
-		//player.updateAll();
-		//opp.updateAll();
-		spacePressed=false;
-		enterPressed=false;
-		startTime=0;
-		//player.setDefense(true);
-		//opp.setDefense(true);
 	}
 	public void qPressed()
 	{
@@ -250,18 +270,7 @@ public class TetrisControl implements ArrowListener
 	}
 	public void wPressed()
 	{
-		if(!started&&!spacePressed)
-		{
-/*			oppOfRight++;
-			if(oppOfRight>=DropPattern.NUMCHARACTERS)
-				oppOfRight=0;
-			opp.setCharacterID(oppOfLeft);
-			player.setCharacterID(oppOfRight);
-			player.update();
-			opp.update();*/
-		}
-		else
-			if(!paused)
+		if(!paused)
 				opp.upPressed();
 	}
 	public void sPressed()//unused as of the 3rd update
@@ -279,116 +288,48 @@ public class TetrisControl implements ArrowListener
 		if(!paused)
 		opp.rightPressed();
 	}
-	public void play()
-	{
-		try
-		{
-			if(paused)
-			{
-				Thread.sleep(1000);
-			}
-			else
-			{
-				int timeWait=INTERVAL;
-				/*if(startTime>=60000)
-					timeWait=INTERVAL/6*5;
-				if(startTime>=120000)
-					timeWait=INTERVAL/7*5;
-				if(startTime>=180000)
-					timeWait=INTERVAL/8*5;
-				if(startTime>=240000)
-					timeWait=INTERVAL/9*5;
-				if(startTime>=300000)
-					timeWait=INTERVAL/10*5;*/
-				player.act();
-				opp.act();
-
-				/*if(player.waited()>=RIGHTWAIT)
-				{
-					player.play(true);
-					update();
-				}
-				if(opp.waited()>=LEFTWAIT)
-				{
-					opp.play(true);
-					update();
-				}*/
-
-				if (startTime % (10 * INTERVAL) == 0)
-				{
-				if(Math.random()>.5)//for fairness
-				{
-					player.play();
-					opp.play();
-				}
-				else
-				{
-					opp.play();
-					player.play();
-				}
-				}
-				update();
-
-				Thread.sleep(timeWait);
-//				player.addWait(INTERVAL);//so that the program thinks you've waited longer than you actually have
-//				opp.addWait(INTERVAL);//after 150 seconds.
-				startTime+=timeWait;
-				//System.out.println(startTime);
-			}
-		}
-		catch(InterruptedException e)
-		{
-			//ignore this blank space
-		}
-	}
 
 	public void downEnd()
 	{
-		if(!started&&!enterPressed)
-		{
-/*			oppOfLeft--;
-			if(oppOfLeft<0)
-				oppOfLeft=DropPattern.NUMCHARACTERS-1;
-			opp.setCharacterID(oppOfLeft);
-			player.setCharacterID(oppOfRight);
-			player.update();
-			opp.update();
-*/		}
-		else
-			if(!paused)
-				player.downEnd();
+		if(!paused)
+			player.downEnd();
 	}
 
 	public void sEnd()
 	{
-		if(!started&&!spacePressed)
-		{
-/*			oppOfRight--;
-			if(oppOfRight<0)
-				oppOfRight=DropPattern.NUMCHARACTERS-1;
-			opp.setCharacterID(oppOfLeft);
-			player.setCharacterID(oppOfRight);
-			player.update();
-			opp.update();
-*/		}
-		else
-			if(!paused)
-				opp.downEnd();
+		if(!paused)
+			opp.downEnd();
 	}
-
 
 	public void downStart()
 	{
-
-			if(!paused)
-				player.downStart();
+		if(!paused)
+			player.downStart();
 	}
-
 
 	public void sStart()
 	{
-			if(!paused)
-				opp.downStart();
+		if(!paused)
+			opp.downStart();
 	}
 
+	// Create a Tetris Control instance, which calls run();
+	// After the game ends, continuously wait 10 seconds before restarting and calling run() again
+	public static void main(String[] args)
+	{
+		TetrisControl game=new TetrisControl();
+		while(true)
+		{
+			try
+			{
+				Thread.sleep(10000);
+			}
+			catch(Exception e)
+			{
+			}
+			game.restart();
+			game.run();
+		}
+	}
+	
 }

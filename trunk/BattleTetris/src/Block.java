@@ -1,54 +1,28 @@
-import java.awt.*;
-import java.awt.event.*;
-import javax.swing.*;
+/** Block.java
+ * 
+ * A Locatable instance that holds color and location for the relevant Display (BlockDisplay)
+ * 	to draw.
+ * A block can be a pivot block for a Tetrad, so that it will be drawn differently.
+ * A block is also drawn differently if it is part of the currently active Tetrad.
+ * 
+ * Blocks are usually added to MyBoundedEnv's so that they can be displayed in BlockDisplay
+ * 
+ * @author AlexFandrianto
+ *
+ */
 
-// Used to display the contents of a game board
+import java.awt.*; // for Color
+
 public class Block implements Locatable
 {
 	private Color color;
-	private Color trueColor;
 	private Location location;
-	private int timer;
-	private boolean canClear;
-	private Shape shape;
 	private boolean active=false;
 	private boolean pivot=false;
-	private boolean shine=false;
+	
 	public Block(Color colorSet)
 	{
 		color=colorSet;
-		trueColor=color;
-		canClear=false;
-		shape=null;
-	}
-	public boolean shine()
-	{
-		return shine;
-	}
-	public void flipShine()
-	{
-		if(shape!=null)
-		{
-			shine=!shine;
-			Block square=this;
-			square.shape().setColor(shine);//for the shiny power gems
-		}
-	}
-	public Shape shape()
-	{
-		return shape;
-	}
-	public void setShape(Shape other)
-	{
-		shape=other;
-	}
-	public double multiplier()
-	{
-		if(timer!=0)//apparently clearing timers has 0 effect.
-			return 0;
-		//if(shape==null)
-			return 1./*heightBonus()*/; //height advantage is apparently nonexistent for these blocks
-		//return shape.shapeMultiplier()*heightBonus();
 	}
 	public void activate()
 	{
@@ -70,51 +44,9 @@ public class Block implements Locatable
 	{
 		return color;
 	}
-	public Color trueColor()
-	{
-		return trueColor;
-	}
-	public boolean canClear()
-	{
-		return canClear;
-	}
 	public void setColor(Color a)
 	{
 		color=a;
-	}
-	public void setTrueColor(Color a)//diamonds only
-	{
-		trueColor=a;
-	}
-	public void darker()
-	{
-		color=new Color(color.getRed()/2,color.getGreen()/2,color.getBlue()/2);//darker();
-		//System.out.println(color()+""+trueColor());
-		timer=5;
-	}
-	public void canClear(boolean canIt)
-	{
-		canClear=canIt;
-	}
-	public void time()
-	{
-		if(timer!=0)
-		{
-			timer--;
-			color=new Color((int)(color.getRed()*1.1),(int)(color.getGreen()*1.1),(int)(color.getBlue()*1.1));
-			if(timer==1)
-				color=new Color((int)(color.getRed()*1.2),(int)(color.getGreen()*1.2),(int)(color.getBlue()*1.2));
-			//System.out.println(color()+""+trueColor());
-			if(timer==0)
-			{
-				color=trueColor;
-				//System.out.println("the above converted");
-			}
-		}
-	}
-	public int timeLeft()
-	{
-		return timer;
 	}
 	public Location location()
 	{
