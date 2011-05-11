@@ -1,7 +1,51 @@
+/** BlockDisplay.java
+ * 
+ * From the 2D board (MyBoundedEnv), BlockDisplay draws a 2D grid of the Blocks in the game.
+ * 	The JFrame holds the JPanel[][] grid for this purpose.
+ * 	Implements KeyListener, sending any key events to an ArrowListener (like Tetris/TetrisControl)
+ * 
+ * We have selected BLOCKWIDTH and BLOCKHEIGHT to be 25, for square 25 pixel blocks.
+ * 
+ * Variables:
+ * 	MyBoundedEnv board: the board whose internal Blocks are accessed for display
+ * 	JPanel[][] grid: a 2D array that maps to the board's Locatables.
+ * 						Every block is displayed in its own JPanel
+ * 
+ * 	JFrame frame: Holds all the JPanels. Is the one who sends KeyEvents to BlockDisplay
+ * 	boolean special: If this display is meant to hide certain top rows. (Unused currently)
+ * 	ArrowListener listener: the listener is asked to perform the relevant action based
+ * 							on KeyEvents that BlockDisplay receives
+ * 
+ * 
+ * Constructors:
+ * 	BlockDisplay(MyBoundedEnv board): Displays the given Environment.
+ * 										Sets up the JPanel[][] grid and JFrame
+ * 										Uses private method createAndShowGUI()
+ * 	BlockDisplay(MyBoundedEnv board, boolean lie): Displays the given Environment
+ * 			but hides 1 row if lie = true. (unused currently)
+ * 
+ * 
+ * Update GUI:
+ * 	showBlocks(): forces the GUI to redraw the blocks on the screen.
+ * 	setTitle(String): changes the title of the JFrame to be this given String
+ * 	setLocation(int x, int y): sets the pixelX, pixelY location of the JFrame window on your monitor
+ * 
+ * KeyListener:
+ * 	KeyTyped : ignored
+ * 	KeyReleased : used for S and Down currently. Triggers ArrowListener's sEnd and downEnd
+ * 	KeyPressed: Used for many keyPressed methods in ArrowListener.
+ * 					Instead calls sStart() and downStart() though.
+ * 
+ * Other Methods:
+ * 	setArrowListener(ArrowListener): this listener actuates responses to interpreted KeyEvents.
+ * 
+ * @author AlexFandrianto
+ *
+ */
+
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
-import java.util.*;
 
 // Used to display the contents of a game board
 public class BlockDisplay implements KeyListener
@@ -118,26 +162,21 @@ public class BlockDisplay implements KeyListener
 			for (int col = 0; col < grid[row].length; col++)
 			{
 				Location loc=new Location(row,col);
-				if(special)
+				if(special) //hide 1 row
 					loc = new Location(row+1, col);
 
 				Block square = (Block)board.objectAt(loc);
-				if (square == null)
+				if (square == null) //use a dark gray background if no block is there.
 				{
-					//grid[row][col].setBackground(Color.WHITE);
-					//if(row==0&&col!=TriadTowers.TWOPLAYERCOLS/2+TriadTowers.TWOPLAYERCOLS%2&&special)
-					//{
-						grid[row][col].setBackground(Color.DARK_GRAY);
-						grid[row][col].setForeground(new Color(Color.GRAY.getRed(),Color.GRAY.getGreen(),Color.GRAY.getBlue(),200));
-					//}
-					//else
-					//	grid[row][col].setBackground(Color.WHITE);
+					grid[row][col].setBackground(Color.DARK_GRAY);
+					grid[row][col].setForeground(new Color(Color.GRAY.getRed(),Color.GRAY.getGreen(),Color.GRAY.getBlue(),200));
 					grid[row][col].setBorder(null);
 				}
-				else
+				else // the background is the block's color.
 				{
 					grid[row][col].setBackground(square.color());
 
+					// the block's border varies depending on if it is active and if it is the pivot
 					if(square.active())
 					{
 						if(square.pivot())

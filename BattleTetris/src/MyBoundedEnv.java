@@ -1,8 +1,38 @@
-import java.awt.*;
-import java.awt.event.*;
-import javax.swing.*;
+/** MyBoundedEnv.java
+ * 
+ * A container for a 2D grid of Locatables. (In this case, Blocks)
+ * 	Locatable[_ROW_][_COL_] theGrid stores all of the Locatables.
+ * 	objectCount = number of objects in theGrid. Always updated to remain consistent.
+ * 
+ * Useful for finding organizing Locatables without conflict.
+ * 
+ * Note: Usually when displayed, a MyBoundedEnv has row 0 at the top counting up while going towards
+ * 		the bottom of the screen.
+ * 
+ * Constructor:
+ * 	MyBoundedEnv(int row, int col): Initialize theGrid to be row x col with objectCount=0.
+ * 
+ * Accessors:
+ * 	int numRows(): # of rows in theGrid
+ * 	int numCols(): # of cols in theGrid
+ * 	boolean isValid(Location): True if the location given is inside theGrid
+ * 	int numObjects(): returns objectCount
+ * 	Locatable[] allObjects(): returns every (non-null) Locatable in theGrid
+ * 								{uses notNull helper method, which is written poorly}
+ * 
+ * 	boolean isEmpty(Location): returns if the loc is valid and if no Locatable is there
+ * 	Locatable objectAt(Location): returns the Locatable at the location (or null if nothing)
+ * 
+ * Mutators:
+ * 	add(Locatable): attempt to add to theGrid. If successful, objectCount++
+ * 	remove(Locatable): attempt to remove from theGrid. If successful, object--
+ * 	recordMove(Locatable, Location): empty the old location and add the Locatable back in.
+ * 	clearAll(): empty theGrid and reset objectCount. (could alternatively make a new grid instead)
+ * 
+ * @author AlexFandrianto
+ *
+ */
 
-// Used to display the contents of a game board
 public class MyBoundedEnv
 {
 	private Locatable[][] theGrid;
@@ -45,10 +75,10 @@ public class MyBoundedEnv
 	}
 	private int notNull(Locatable[] a)
 	{
-		for(int row=0;row<a.length;row++)
+		for(int i=0;i<a.length;i++)
 		{
-			if(a[row]==null)
-				return row;
+			if(a[i]==null)
+				return i;
 		}
 		return -1;
 	}
@@ -81,8 +111,11 @@ public class MyBoundedEnv
 	}
 	public void recordMove(Locatable obj,Location oldLoc)
 	{
-		theGrid[oldLoc.row()][oldLoc.col()]=null;
-		objectCount--;
+		if (theGrid[oldLoc.row()][oldLoc.col()] != null)
+		{
+			theGrid[oldLoc.row()][oldLoc.col()]=null;
+			objectCount--;
+		}
 		this.add(obj);
 	}
 	public void clearAll()
