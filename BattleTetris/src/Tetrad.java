@@ -63,6 +63,7 @@ public class Tetrad
 		theirEnv=pass;
 		return this;
 	}
+	
 	private Color pickColor()
 	{
 		int a=(int)(Math.random()*7)+1;
@@ -207,7 +208,7 @@ public class Tetrad
 	{
 		return blocks;
 	}
-	private void addToLocations(Location[] locs)
+	public void addToLocations(Location[] locs)
 	{
 		for(int i=0;i<locs.length;i++)
 		{
@@ -261,7 +262,7 @@ public class Tetrad
 	// Give whether you're rotating clockwise or not.
 	// The locations of the original blocks
 	// And the pivot point you want.
-	private Location[] turnLocs(boolean rotate,Location[] a, int row0, int col0)
+	public Location[] turnLocs(boolean rotate,Location[] a, int row0, int col0)
 	{
 		Location[] b=new Location[a.length];
 		if(rotate)//clockwise
@@ -340,7 +341,6 @@ public class Tetrad
 		addToLocations(a);
 		return false;
 	}
-
 
 
 }

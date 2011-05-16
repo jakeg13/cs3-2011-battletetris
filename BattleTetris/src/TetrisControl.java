@@ -71,6 +71,43 @@ public class TetrisControl implements ArrowListener
 		update();
 		run();
 	}
+	public TetrisControl(int b)
+	{
+		MyBoundedEnv env=new MyBoundedEnv(1,9);
+		Block temp=null;
+		for(int i=0;i<env.numCols();i++)
+		{
+			if(i%4==0)
+				temp=new Block(Color.red);
+			if(i%4==1)
+				temp=new Block(Color.green);
+			if(i%4==2)
+				temp=new Block(Color.blue);
+			if(i%4==3)
+				temp=new Block(Color.yellow);
+			temp.setLocation(new Location(0,i));
+			env.add(temp);
+		}
+		opp=new Tetris(1);
+		opp.setLocationEnvTop(50,0);
+		opp.setLocationEnvBottom(50,160);
+		player=new Tetris(1);
+		player.setLocationEnvTop(800,0);
+		player.setLocationEnvBottom(800,160);
+		player.setOpponent(opp);
+		opp.setOpponent(player);
+		
+		new TetrisHeuristicAI(opp);
+		//new TetrisHeuristicAI(player);
+
+
+		play=new BlockDisplay(env);
+		play.setArrowListener(this);
+		play.setLocation(450,100);
+
+		update();
+		run();
+	}
 	public void update()
 	{
 /*		if(paused)
@@ -317,7 +354,7 @@ public class TetrisControl implements ArrowListener
 	// After the game ends, continuously wait 10 seconds before restarting and calling run() again
 	public static void main(String[] args)
 	{
-		TetrisControl game=new TetrisControl();
+		TetrisControl game=new TetrisControl(1);
 		while(true)
 		{
 			try

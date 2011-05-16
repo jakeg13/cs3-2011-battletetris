@@ -129,4 +129,16 @@ public class MyBoundedEnv
 			}
 		}
 	}
+	
+	public int[][] intGrid()
+	{
+		int[][] a = new int[theGrid.length][theGrid[0].length];
+		for (int i = 0; i < theGrid.length; i++)
+			for (int j = 0; j < theGrid[0].length; j++)
+				if (theGrid[i][j] != null)
+					a[i][j] = 1;
+				else
+					a[i][j] = 0;
+		return a;
+	}
 }
