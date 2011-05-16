@@ -85,6 +85,8 @@ public class Tetris implements ArrowListener
 	private int pendingRows = 0;
 
 	private Tetris opp = null;
+	private TetrisAI ai = null;
+	
 	public Tetris()
 	{
 		arrows = new boolean[4];
@@ -136,6 +138,23 @@ public class Tetris implements ArrowListener
 		//display.setTitle("Tetris! Level: "+level+" Score: "+score+" Game Over!");
 	}
 
+	public void setAI(TetrisAI ai)
+	{
+		this.ai = ai;
+	}
+	public MyBoundedEnv board()
+	{
+		return env;
+	}
+	public Tetrad currentRad()
+	{
+		return rad;
+	}
+	public Tetrad nextRad()
+	{
+		return rad2;
+	}
+	
 	public void setOpponent(Tetris other)
 	{
 		opp = other;
@@ -225,7 +244,7 @@ public class Tetris implements ArrowListener
 		if (rad != null)
 			rad.activate();
 
-		rad=rad2.changeEnv(env);
+		rad=rad2.changeEnv(env); // oh dear what if I press down right now?! Then overlap => premature gameover
 
 		rad.activate();
 
@@ -380,6 +399,12 @@ public class Tetris implements ArrowListener
 	{
 		if (arrows[3])
 			downPressed();
+		
+		if (ai != null)
+		{
+			ai.think();
+			ai.actuate();
+		}
 	}
 	public void play()
 	{
@@ -425,6 +450,7 @@ public class Tetris implements ArrowListener
 					rowsMoved=0;
 				//else
 				//	rowsMoved=-1;
+				downEnd();
 				boolean a=newTetrad();
 				if(!a)
 				{
