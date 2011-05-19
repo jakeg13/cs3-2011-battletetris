@@ -12,12 +12,12 @@
 
 public class TetrisHeuristicAI implements TetrisAI {
 
-	private Tetris tetris;
-	private MyBoundedEnv board;
+	protected Tetris tetris;
+	protected MyBoundedEnv board;
 	
-	private Tetrad curRad = null; // doesn't match tetris.currentRad() if we need to rethink
-	private int[] desValues = new int[3]; // for if we've thought. How we want to move the rad
-	private int[] curValues = new int[3]; // needs to reach desValues
+	protected Tetrad curRad = null; // doesn't match tetris.currentRad() if we need to rethink
+	protected int[] desValues = new int[3]; // for if we've thought. How we want to move the rad
+	protected int[] curValues = new int[3]; // needs to reach desValues
 	
 	
 	public TetrisHeuristicAI(Tetris t)
@@ -117,14 +117,27 @@ public class TetrisHeuristicAI implements TetrisAI {
 					}
 				}
 				
+				boolean addedToBoard = true;
 				// You're down all the way now. So how's the board looking?
 				for (Location loc : currentLocs)
 				{
 					if (board.isValid(loc))
 						g[loc.row()][loc.col()] = 1; // into board
+					else
+						addedToBoard = false;
+				}
+				if (!addedToBoard)
+				{
+					for (Location loc : currentLocs)
+					{
+						if (board.isValid(loc))
+							g[loc.row()][loc.col()] = 0; // out of board
+					}
+					continue;
 				}
 				
-				int weight = computeBoardWeight(g);
+				int weight = computeBoardWeight(g, currentLocs);
+				System.out.println("Candidates: " + weight + " " + r + " " + i + " " + avgHeight(g));
 				
 				if (weight > bestWeight)
 				{
@@ -135,21 +148,20 @@ public class TetrisHeuristicAI implements TetrisAI {
 				
 				for (Location loc : currentLocs)
 				{
-					if (board.isValid(loc))
-						g[loc.row()][loc.col()] = 0; // out of board
+					g[loc.row()][loc.col()] = 0; // out of board
 				}
 				
 			}
 		}
 		
 		desValues[0] = bestWeight;
-		System.out.println(desValues[0] + " " + desValues[1] + " " + desValues[2]);
 		desValues[1] = bestR;
 		desValues[2] = bestI;
+		System.out.println(desValues[0] + " " + desValues[1] + " " + desValues[2]);
 		curValues = new int[3];
 	}
 	
-	private int doubleAdd(int[][] g)
+	protected int doubleAdd(int[][] g)
 	{
 		int sum = 0;
 		for (int i = 0; i < g.length; i++)
@@ -157,7 +169,31 @@ public class TetrisHeuristicAI implements TetrisAI {
 				sum += g[i][j];
 		return sum;
 	}
-	private int computeBoardWeight(int[][] g)
+	protected int avgHeight(int[][] g)
+	{
+		int[] heights = new int[g[0].length];
+		for (int j = 0; j < g[0].length; j++)
+		{
+			boolean seen = false;
+			for (int i = 0; i < g.length; i++)
+			{
+				if (!seen && g[i][j] != 0)
+				{
+					heights[j] = g.length - i;
+					seen = true;
+					
+				}
+			}
+		}
+		
+		int sum = 0;
+		for (int a : heights)
+			sum += a;
+		
+		return sum / g[0].length;
+	}
+	
+	protected int computeBoardWeight(int[][] g, Location[] curLocs)
 	{		
 		int penalty = 0; // num holes
 		int penalty2 = 0; // num caverns [columns with 3 blanks on top of each other]
@@ -165,22 +201,29 @@ public class TetrisHeuristicAI implements TetrisAI {
 		int sum = 0;
 		int numBlocks = doubleAdd(g);
 		
-		for (int i = 0; i < g.length; i++)
-			for (int j = 0; j < g[0].length; j++)
+		for (int j = 0; j < g[0].length; j++)
+		{
+			boolean gotCavern = false;
+			for (int i = 0; i < g.length; i++)
 			{
 				if (g[i][j] == 0)
 				{
 					if (blockAbove(g, i, j))
 						penalty++;
-					else if (insideCavern(g, i, j))
-						penalty2++;
+					else if (insideCavern(g, i, j) && !gotCavern)
+					{
+						penalty++;
+						//penalty2++;
+						//gotCavern = true;
+					}
 					continue;
 				}
 				
-				int scale = 0; //numBlocks / g[0].length; // want blocks to be within 3 of avg.
+				int scale = 5; //numBlocks / g[0].length; // want blocks to be within 3 of avg.
 				
 				sum += (i-scale)*(i-scale)*(i-scale);
 			}
+		}
 		
 		sum -= 4000 * penalty;
 		
@@ -196,12 +239,12 @@ public class TetrisHeuristicAI implements TetrisAI {
 				//sum += (g.length - i) * (g.length - i) * numBlocks;
 			}
 		
-		sum += rowsCompleted * rowsCompleted * numBlocks;
+		sum += rowsCompleted * rowsCompleted * numBlocks * numBlocks;
 		
 		return sum;
 	}
 	
-	private boolean rowComplete(int[][] g, int row)
+	protected boolean rowComplete(int[][] g, int row)
 	{
 		for (int i = 0; i < g[0].length; i++)
 			if (g[row][i] == 0)
@@ -209,7 +252,7 @@ public class TetrisHeuristicAI implements TetrisAI {
 		return true;
 	}
 	
-	private boolean blockAbove(int[][] g, int row, int col)
+	protected boolean blockAbove(int[][] g, int row, int col)
 	{
 		for (int i = row; i >= 0; i--)
 		{
@@ -219,12 +262,12 @@ public class TetrisHeuristicAI implements TetrisAI {
 		return false;
 	}
 	
-	private boolean insideCavern(int[][] g, int row, int col)
+	protected boolean insideCavern(int[][] g, int row, int col)
 	{
 		if (blockAbove(g, row, col))
 			return false;// then this is just a hole
 		
-		for (int i = row; i >= row - 3; i--)
+		for (int i = row - 3; i >= row - 3; i--) // only the 3rd block to the left and right
 		{
 			for (int j = col-1; j <= col+1; j++)
 				if (board.isValid(new Location(i, j)))
@@ -234,8 +277,9 @@ public class TetrisHeuristicAI implements TetrisAI {
 					if (j != col && g[i][j] == 0 && !blockAbove(g, i, j))
 						return false; // is not part of a cavern (unless very unlucky)
 				}
+				else if (i < 0)
+					return false;
 		}
-		
 		return true;
 	}
 
