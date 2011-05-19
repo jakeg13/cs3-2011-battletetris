@@ -405,6 +405,7 @@ public class Tetris implements ArrowListener
 			ai.think();
 			ai.actuate();
 		}
+		display.showBlocks();
 	}
 	public void play()
 	{
