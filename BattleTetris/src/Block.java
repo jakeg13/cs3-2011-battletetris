@@ -20,9 +20,24 @@ public class Block implements Locatable
 	private boolean active=false;
 	private boolean pivot=false;
 	
+	public static final int POWERUP_NORMAL = 0;
+	public static final int POWERUP_BOMB = 1;
+	public static final int POWERUP_ANTIBOMB = 2;
+	
+	
+	private int powerup_type = POWERUP_NORMAL;
+	
 	public Block(Color colorSet)
 	{
 		color=colorSet;
+	}
+	public void setPowerType(int type)
+	{
+		powerup_type = type;
+	}
+	public int getPowerType()
+	{
+		return powerup_type;
 	}
 	public void activate()
 	{
