@@ -52,16 +52,47 @@ public class Tetrad
 {
 	private MyBoundedEnv theirEnv;
 	private Block[] blocks;
+	
+	public static final double POWERUP_CHANCE = 0.6;
+	
 	public Tetrad(MyBoundedEnv their)
 	{
 		Color a=pickColor();
 		this.setLocation(a);
 		theirEnv=their;
+		
+		randomizePowerUp();
+		
+	}
+	public Tetrad(MyBoundedEnv their, int pwrType)
+	{
+		if (pwrType == Block.POWERUP_BOMB)
+			this.setLocation(Color.black);
+		else if (pwrType == Block.POWERUP_ANTIBOMB)
+			this.setLocation(Color.white);
+		else
+		{
+			Color a=pickColor();
+			this.setLocation(a);
+		}
+		theirEnv=their;		
 	}
 	public Tetrad changeEnv(MyBoundedEnv pass)
 	{
 		theirEnv=pass;
 		return this;
+	}
+	
+	private void randomizePowerUp()
+	{
+		if (Math.random() < POWERUP_CHANCE)
+		{
+			int blockNum = (int)(Math.random() * 4);
+			if (Math.random() < .5)
+				blocks[blockNum].setPowerType(Block.POWERUP_BOMB);
+			else
+				blocks[blockNum].setPowerType(Block.POWERUP_ANTIBOMB);
+		}
 	}
 	
 	private Color pickColor()

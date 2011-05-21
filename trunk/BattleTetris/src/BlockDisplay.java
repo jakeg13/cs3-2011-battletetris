@@ -154,6 +154,11 @@ public class BlockDisplay implements KeyListener
         frame.pack();
         frame.setVisible(true);
     }
+    
+    public static Color blendColors(Color a, Color b)
+    {
+    	return new Color((a.getRed() + b.getRed())/2, (a.getGreen() + b.getGreen())/2, (a.getBlue() + b.getBlue())/2);
+    }
 
 	//Redraws the board to include the pieces and border colors.
 	public void showBlocks()
@@ -175,6 +180,11 @@ public class BlockDisplay implements KeyListener
 				else // the background is the block's color.
 				{
 					grid[row][col].setBackground(square.color());
+					
+					if (square.getPowerType() == Block.POWERUP_BOMB)
+						grid[row][col].setBackground(blendColors(square.color(), Color.BLACK));
+					else if (square.getPowerType() == Block.POWERUP_ANTIBOMB)
+						grid[row][col].setBackground(blendColors(square.color(), Color.WHITE));
 
 					// the block's border varies depending on if it is active and if it is the pivot
 					if(square.active())
@@ -186,6 +196,7 @@ public class BlockDisplay implements KeyListener
 					}
 					else
 						grid[row][col].setBorder(BorderFactory.createLineBorder(square.color().darker(),3));
+					
 				}
 			}
 	}

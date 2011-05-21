@@ -97,7 +97,7 @@ public class TetrisControl implements ArrowListener
 		player.setOpponent(opp);
 		opp.setOpponent(player);
 		
-		new TetrisHeuristicAI(opp);
+		//new TetrisHeuristicAI(opp);
 		//new TetrisHeuristicAI(player);
 
 

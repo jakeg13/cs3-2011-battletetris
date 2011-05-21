@@ -482,56 +482,18 @@ public class Tetris implements ArrowListener
 		Location loc=a.location();
 		int row=loc.row();
 		int col=loc.col();
-		Locatable b=env.objectAt(new Location(row+1,col));
-		Locatable c=env.objectAt(new Location(row-1,col));
-		Locatable d=env.objectAt(new Location(row,col+1));
-		Locatable e=env.objectAt(new Location(row,col-1));
-		Locatable f=env.objectAt(new Location(row+1,col+1));
-		Locatable g=env.objectAt(new Location(row-1,col-1));
-		Locatable h=env.objectAt(new Location(row+1,col-1));
-		Locatable i=env.objectAt(new Location(row-1,col+1));
-		if(b!=null)
-		{
-			env.remove(b);
-			score+=level*5;
-		}
-		if(c!=null)
-		{
-			env.remove(c);
-			score+=level*5;
-		}
-		if(d!=null)
-		{
-			env.remove(d);
-			score+=level*5;
-		}
-		if(e!=null)
-		{
-			env.remove(e);
-			score+=level*5;
-		}
-		if(f!=null)
-		{
-			env.remove(f);
-			score+=level*5;
-		}
-		if(g!=null)
-		{
-			env.remove(g);
-			score+=level*5;
-		}
-		if(h!=null)
-		{
-			env.remove(h);
-			score+=level*5;
-		}
-		if(i!=null)
-		{
-			env.remove(i);
-			score+=level*5;
-		}
-		env.remove(a);
-		score+=level*5;
+		for (int i = row - 1; i <= row+1; i++)
+			for (int j = col - 1; j <= col+1; j++)
+			{
+				Location l = new Location(i, j);
+				Locatable lb = env.objectAt(l);
+				if (lb != null)
+				{
+					env.remove(lb);
+					score+=level*5;
+				}
+			}
+		display.showBlocks();
 		display.setTitle("Tetris! Level: "+level+" Score: "+score);
 	}
 	private void blowDown()
@@ -540,86 +502,18 @@ public class Tetris implements ArrowListener
 		Location loc=a.location();
 		int row=loc.row();
 		int col=loc.col();
-		if(env.isEmpty(new Location(row+1,col)))
-		{
-			if(Math.random()<.3)
+		for (int i = row - 1; i <= row+1; i++)
+			for (int j = col - 1; j <= col+1; j++)
 			{
-				Block b=new Block(Color.white);
-				b.setLocation(new Location(row+1,col));
-				env.add(b);
-				score+=level*5;
+				Location l = new Location(i, j);
+				if (env.isValid(l) && env.isEmpty(l))
+				{
+					Block b=new Block(Color.white);
+					b.setLocation(l);
+					env.add(b);
+					score+=level*5;
+				}
 			}
-		}
-		if(env.isEmpty(new Location(row-1,col)))
-		{
-			if(Math.random()<.3)
-			{
-				Block b=new Block(Color.white);
-				b.setLocation(new Location(row-1,col));
-				env.add(b);
-				score+=level*5;
-			}
-		}
-		if(env.isEmpty(new Location(row,col+1)))
-		{
-			if(Math.random()<.3)
-			{
-				Block b=new Block(Color.white);
-				b.setLocation(new Location(row,col+1));
-				env.add(b);
-				score+=level*5;
-			}
-		}
-		if(env.isEmpty(new Location(row,col-1)))
-		{
-			if(Math.random()<.3)
-			{
-				Block b=new Block(Color.white);
-				b.setLocation(new Location(row,col-1));
-				env.add(b);
-				score+=level*5;
-			}
-		}
-		if(env.isEmpty(new Location(row+1,col+1)))
-		{
-			if(Math.random()<.3)
-			{
-				Block b=new Block(Color.white);
-				b.setLocation(new Location(row+1,col+1));
-				env.add(b);
-				score+=level*5;
-			}
-		}
-		if(env.isEmpty(new Location(row+1,col-1)))
-		{
-			if(Math.random()<.3)
-			{
-				Block b=new Block(Color.white);
-				b.setLocation(new Location(row+1,col-1));
-				env.add(b);
-				score+=level*5;
-			}
-		}
-		if(env.isEmpty(new Location(row-1,col+1)))
-		{
-			if(Math.random()<.3)
-			{
-				Block b=new Block(Color.white);
-				b.setLocation(new Location(row-1,col+1));
-				env.add(b);
-				score+=level*5;
-			}
-		}
-		if(env.isEmpty(new Location(row-1,col-1)))
-		{
-			if(Math.random()<.3)
-			{
-				Block b=new Block(Color.white);
-				b.setLocation(new Location(row-1,col-1));
-				env.add(b);
-				score+=level*5;
-			}
-		}
 		display.showBlocks();
 		display.setTitle("Tetris! Level: "+level+" Score: "+score);
 	}
@@ -636,11 +530,15 @@ public class Tetris implements ArrowListener
 			return true;
 		return false;
 	}
-	private void clearRow(int row)
+	private int clearRow(int row)
 	{
+		int powerUp = 0;
 		for(int i=0;i<env.numCols();i++)
 		{
-			env.remove(env.objectAt(new Location(row,i)));
+			Block b = (Block)env.objectAt(new Location(row,i));
+			if (powerUp == 0)
+				powerUp = b.getPowerType();
+			env.remove(b);
 		}
 		for(int row2=row;row2>=0;row2--)
 		{
@@ -655,6 +553,8 @@ public class Tetris implements ArrowListener
 				}
 			}
 		}
+		
+		return powerUp;
 	}
 	public void clearCompletedRows()
 	{
@@ -663,8 +563,18 @@ public class Tetris implements ArrowListener
 		{
 			if(isCompletedRow(i))
 			{
-				clearRow(i);
+				int powerType = clearRow(i);
+				if (powerType == Block.POWERUP_BOMB || powerType == Block.POWERUP_ANTIBOMB)
+				{
+					rad2 = new Tetrad(env2, powerType);
+				}
 				a++;
+			}
+			for (int j = 0; j < env.numCols();j++)
+			{
+				Block b = (Block)env.objectAt(new Location(i, j));
+				if (b != null)
+					b.setPowerType(Block.POWERUP_NORMAL);
 			}
 		}
 		if(a==1)
