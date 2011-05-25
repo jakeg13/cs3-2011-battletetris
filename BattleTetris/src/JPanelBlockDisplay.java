@@ -48,7 +48,7 @@ import java.awt.event.*;
 import javax.swing.*;
 
 // Used to display the contents of a game board
-public class JPanelBlockDisplay implements IBlockDisplay
+public class JPanelBlockDisplay implements BlockDisplay
 {
 	public static int BLOCKWIDTH=25;
 	public static int BLOCKHEIGHT=25;

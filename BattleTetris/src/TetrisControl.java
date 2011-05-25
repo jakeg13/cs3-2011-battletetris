@@ -33,7 +33,7 @@ public class TetrisControl implements ArrowListener
 
 	private Tetris player;
 	private Tetris opp;
-	private IBlockDisplay play;
+	private BlockDisplay play;
 	private boolean paused;
 	private boolean started=false;
 	private int startTime=0;

@@ -67,10 +67,10 @@ import java.awt.*;
 public class Tetris implements ArrowListener
 {
 	private MyBoundedEnv env;
-	private IBlockDisplay display;
+	private BlockDisplay display;
 	private Tetrad rad;
 	private MyBoundedEnv env2;
-	private IBlockDisplay display2;
+	private BlockDisplay display2;
 	private Tetrad rad2;
 	private int score;
 	private int level;
