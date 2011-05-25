@@ -44,55 +44,32 @@
  */
 
 import java.awt.*;
-import java.awt.event.*;
 import javax.swing.*;
 
 // Used to display the contents of a game board
-public class JPanelBlockDisplay implements BlockDisplay
+public class JPanelBlockDisplay extends BaseBlockDisplay
 {
 	public static int BLOCKWIDTH=25;
 	public static int BLOCKHEIGHT=25;
 
 	private MyBoundedEnv board;
 	private JPanel[][] grid;
-	private JFrame frame;
-	private boolean special=false;
-	private ArrowListener listener;
+	private boolean special;
 
 	// Constructs a new display for displaying the given board
 	public JPanelBlockDisplay(MyBoundedEnv board)
 	{
-		this.board = board;
-		grid = new JPanel[board.numRows()][board.numCols()];
-
-        //Schedule a job for the event-dispatching thread:
-        //creating and showing this application's GUI.
-        SwingUtilities.invokeLater(new Runnable()
-        {
-            public void run()
-            {
-                createAndShowGUI();
-            }
-        });
-
-		//Wait until display has been drawn
-        try
-        {
-        	while (frame == null || !frame.isVisible())
-        		Thread.sleep(1);
-		}
-		catch(InterruptedException e)
-		{
-			e.printStackTrace();
-			System.exit(1);
-		}
+		this(board, false);
 	}
-	public JPanelBlockDisplay(MyBoundedEnv board, boolean lie)
+	public JPanelBlockDisplay(MyBoundedEnv board, boolean special)
 	{
-		special=lie;
-		//special=false;
+		this.special = special;
 		this.board = board;
-		grid = new JPanel[board.numRows()-1][board.numCols()];
+		
+		frame = new JFrame();
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        
+		grid = new JPanel[board.numRows()][board.numCols()];
 
         //Schedule a job for the event-dispatching thread:
         //creating and showing this application's GUI.
@@ -124,10 +101,7 @@ public class JPanelBlockDisplay implements BlockDisplay
      */
     private void createAndShowGUI()
     {
-        if(frame==null)
-        {
-
-        //Create and set up the window.
+                //Create and set up the window.
         frame = new JFrame();
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         if(!special)
@@ -138,6 +112,7 @@ public class JPanelBlockDisplay implements BlockDisplay
 
 		//Create each square component.
         for (int row = 0; row < grid.length; row++)
+        {
         	for (int col = 0; col < grid[row].length; col++)
         	{
 				grid[row][col] = new JPanel();
@@ -199,89 +174,5 @@ public class JPanelBlockDisplay implements BlockDisplay
 					
 				}
 			}
-	}
-
-	// Sets the title of the window.
-	public void setTitle(String title)
-	{
-		frame.setTitle(title);
-	}
-
-	public void keyTyped(KeyEvent e)
-	{
-	}
-
-	public void keyReleased(KeyEvent e)
-	{
-		try
-		{
-			Thread.sleep(10);
-		if (listener == null)
-			return;
-		int code = e.getKeyCode();
-		if (code == KeyEvent.VK_DOWN)
-			listener.downEnd();
-		else if (code == KeyEvent.VK_S)
-			listener.sEnd();
-		}
-		catch(InterruptedException f)
-		{
-		}
-	}
-
-	public void keyPressed(KeyEvent e)
-	{
-		try
-		{
-			Thread.sleep(10);
-		if (listener == null)
-			return;
-		int code = e.getKeyCode();
-		if (code == KeyEvent.VK_LEFT)
-			listener.leftPressed();
-		else if (code == KeyEvent.VK_RIGHT)
-			listener.rightPressed();
-		else if (code == KeyEvent.VK_DOWN)
-			listener.downStart();
-		else if (code == KeyEvent.VK_COMMA)
-			listener.commaPressed();
-		else if (code == KeyEvent.VK_UP)
-			listener.upPressed();
-		else if (code == KeyEvent.VK_PERIOD)
-			listener.periodPressed();
-		else if (code == KeyEvent.VK_SPACE)
-			listener.spacePressed();
-		else if (code == KeyEvent.VK_ENTER)
-			listener.enterPressed();
-		else if (code == KeyEvent.VK_P)
-			listener.pPressed();
-		else if (code == KeyEvent.VK_Q)
-			listener.qPressed();
-		else if (code == KeyEvent.VK_W)
-			listener.wPressed();
-		else if (code == KeyEvent.VK_E)
-			listener.ePressed();
-		else if (code == KeyEvent.VK_S)
-			listener.sStart();
-		else if (code == KeyEvent.VK_A)
-			listener.aPressed();
-		else if (code == KeyEvent.VK_D)
-		{
-			listener.dPressed();
-		}
-		}
-		catch(InterruptedException f)
-		{
-		}
-	}
-
-	public void setArrowListener(ArrowListener listener)
-	{
-		this.listener = listener;
-	}
-
-	public void setLocation(int x, int y)
-	{
-		frame.setLocation(x,y);
 	}
 }
