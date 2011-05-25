@@ -215,7 +215,7 @@ public class Tetris implements ArrowListener
 
 	public static void main(String[] args)
 	{
-		Tetris game=new Tetris();
+		new Tetris();
 		System.out.println("Game over!");
 	}
 	public boolean notLost()
