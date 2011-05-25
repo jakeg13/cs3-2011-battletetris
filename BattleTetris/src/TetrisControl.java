@@ -33,7 +33,7 @@ public class TetrisControl implements ArrowListener
 
 	private Tetris player;
 	private Tetris opp;
-	private BlockDisplay play;
+	private IBlockDisplay play;
 	private boolean paused;
 	private boolean started=false;
 	private int startTime=0;
@@ -64,7 +64,7 @@ public class TetrisControl implements ArrowListener
 		opp.setOpponent(player);
 
 
-		play=new BlockDisplay(env);
+		play=new JPanelBlockDisplay(env);
 		play.setArrowListener(this);
 		play.setLocation(450,100);
 
@@ -101,7 +101,7 @@ public class TetrisControl implements ArrowListener
 		//new TetrisHeuristicAI(player);
 
 
-		play=new BlockDisplay(env);
+		play=new JPanelBlockDisplay(env);
 		play.setArrowListener(this);
 		play.setLocation(450,100);
 
