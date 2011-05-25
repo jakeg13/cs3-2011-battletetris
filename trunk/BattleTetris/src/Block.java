@@ -74,7 +74,7 @@ public class Block implements Locatable
 	public static void main(String[] args)
 	{
 		MyBoundedEnv env=new MyBoundedEnv(6,5); //6 rows, 5 cols
-		BlockDisplay a=new BlockDisplay(env);
+		IBlockDisplay a=new JPanelBlockDisplay(env);
 		Locatable obj=new Block(Color.red);
 		((Block)obj).setLocation(new Location(5, 0));
 		env.add(obj);

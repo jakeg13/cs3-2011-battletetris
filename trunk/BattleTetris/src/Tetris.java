@@ -67,10 +67,10 @@ import java.awt.*;
 public class Tetris implements ArrowListener
 {
 	private MyBoundedEnv env;
-	private BlockDisplay display;
+	private IBlockDisplay display;
 	private Tetrad rad;
 	private MyBoundedEnv env2;
-	private BlockDisplay display2;
+	private IBlockDisplay display2;
 	private Tetrad rad2;
 	private int score;
 	private int level;
@@ -94,9 +94,9 @@ public class Tetris implements ArrowListener
 			arrows[i] = false;
 
 		env=new MyBoundedEnv(GAME_ROWS,GAME_COLS);
-		display=new BlockDisplay(env);
+		display=new JPanelBlockDisplay(env);
 		env2=new MyBoundedEnv(4,GAME_COLS);
-		display2=new BlockDisplay(env2);
+		display2=new JPanelBlockDisplay(env2);
 		display2.setTitle("Tetris! Next Shape");
 		score=0;
 		level=1;
@@ -119,9 +119,9 @@ public class Tetris implements ArrowListener
 			arrows[i] = false;
 
 		env=new MyBoundedEnv(GAME_ROWS,GAME_COLS);
-		display=new BlockDisplay(env);
+		display=new JPanelBlockDisplay(env);
 		env2=new MyBoundedEnv(4,GAME_COLS);
-		display2=new BlockDisplay(env2);
+		display2=new JPanelBlockDisplay(env2);
 		display2.setTitle("Tetris! Next Shape");
 		score=0;
 		level=1;
