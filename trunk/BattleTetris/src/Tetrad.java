@@ -66,9 +66,9 @@ public class Tetrad
 	}
 	public Tetrad(MyBoundedEnv their, int pwrType)
 	{
-		if (pwrType == Block.POWERUP_BOMB)
+		if (pwrType == PowerUp.POWERUP_BOMB)
 			this.setLocation(Color.black);
-		else if (pwrType == Block.POWERUP_ANTIBOMB)
+		else if (pwrType == PowerUp.POWERUP_ANTIBOMB)
 			this.setLocation(Color.white);
 		else
 		{
@@ -88,10 +88,15 @@ public class Tetrad
 		if (Math.random() < POWERUP_CHANCE)
 		{
 			int blockNum = (int)(Math.random() * 4);
-			if (Math.random() < .5)
-				blocks[blockNum].setPowerType(Block.POWERUP_BOMB);
+			double d = Math.random();
+			if (d < .35)
+				blocks[blockNum].setPowerType(PowerUp.POWERUP_BOMB);
+			else if (d < .7)
+				blocks[blockNum].setPowerType(PowerUp.POWERUP_ANTIBOMB);
+			else if (d < .9)
+				blocks[blockNum].setPowerType(PowerUp.POWERUP_REMOVE);
 			else
-				blocks[blockNum].setPowerType(Block.POWERUP_ANTIBOMB);
+				blocks[blockNum].setPowerType(PowerUp.POWERUP_SCRAMBLE);
 		}
 	}
 	

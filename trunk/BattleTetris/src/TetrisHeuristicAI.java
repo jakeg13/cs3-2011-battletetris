@@ -1,3 +1,5 @@
+import java.awt.Color;
+
 /** TetrisHeuristicAI implements TetrisAI's think() and actuate() methods
  * 
  *  Meant to use the Tetris heuristic from http://www.vidarholen.net/contents/junk/tetris/
@@ -136,8 +138,35 @@ public class TetrisHeuristicAI implements TetrisAI {
 					continue;
 				}
 				
+				int[][] gflip = new int[g.length][g[0].length];
+				if (curRad.blocks()[0].color() == Color.white)
+				{
+					for (int rx = currentLocs[0].row()-1; rx <= currentLocs[0].row()+1; rx++)
+						for (int j = currentLocs[0].col()-1; j<= currentLocs[0].col()+1; j++)
+							if (board.isValid(new Location(rx, j)) && g[rx][j] == 0 && rx != j)
+							{
+								g[rx][j] = 1;
+								gflip[rx][j] = -1;
+							}
+				}
+				else if (curRad.blocks()[0].color() == Color.black)
+				{
+					for (int rx = currentLocs[0].row()-1; rx <= currentLocs[0].row()+1; rx++)
+						for (int j = currentLocs[0].col()-1; j<= currentLocs[0].col()+1; j++)
+							if (board.isValid(new Location(rx, j)) && g[rx][j] == 1)
+							{
+								g[rx][j] = 0;
+								gflip[rx][j] = 1;
+							}
+				}
+				
 				int weight = computeBoardWeight(g, currentLocs);
 				System.out.println("Candidates: " + weight + " " + r + " " + i + " " + avgHeight(g));
+				
+				for (int rx = 0; rx < g.length; rx++)
+					for (int j = 0; j < g[0].length; j++)
+						g[rx][j] += gflip[rx][j];
+				
 				
 				if (weight > bestWeight)
 				{
@@ -237,6 +266,15 @@ public class TetrisHeuristicAI implements TetrisAI {
 			{
 				rowsCompleted++;
 				//sum += (g.length - i) * (g.length - i) * numBlocks;
+				for (int j = 0; j < g[0].length; j++)
+				{
+					Location loc = new Location(i, j);
+					Block b = (Block)board.objectAt(loc); // could be null
+					if (b != null && b.getPowerType() != PowerUp.POWERUP_NORMAL)
+					{
+						sum += numBlocks * numBlocks;
+					}
+				}
 			}
 		
 		sum += rowsCompleted * rowsCompleted * numBlocks * numBlocks;

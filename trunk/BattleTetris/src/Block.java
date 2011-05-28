@@ -18,14 +18,9 @@ public class Block implements Locatable
 	private Color color;
 	private Location location;
 	private boolean active=false;
-	private boolean pivot=false;
+	private boolean pivot=false;	
 	
-	public static final int POWERUP_NORMAL = 0;
-	public static final int POWERUP_BOMB = 1;
-	public static final int POWERUP_ANTIBOMB = 2;
-	
-	
-	private int powerup_type = POWERUP_NORMAL;
+	private int powerup_type = PowerUp.POWERUP_NORMAL;
 	
 	public Block(Color colorSet)
 	{

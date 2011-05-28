@@ -89,11 +89,17 @@ public class BitmapBlockDisplay extends BaseBlockDisplay
 				// Set base color
 				switch (block.getPowerType())
 				{
-				case Block.POWERUP_BOMB:
+				case PowerUp.POWERUP_BOMB:
 					graphics.setColor(blendColors(block.color(), Color.black));
 					break;
-				case Block.POWERUP_ANTIBOMB:
+				case PowerUp.POWERUP_ANTIBOMB:
 					graphics.setColor(blendColors(block.color(), Color.white));
+					break;
+				case PowerUp.POWERUP_SCRAMBLE:
+					graphics.setColor(Color.orange);
+					break;
+				case PowerUp.POWERUP_REMOVE:
+					graphics.setColor(new Color(80, 0, 0));
 					break;
 				default:
 					graphics.setColor(block.color());
