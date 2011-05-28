@@ -151,10 +151,14 @@ public class JPanelBlockDisplay extends BaseBlockDisplay
 				{
 					grid[row][col].setBackground(square.color());
 					
-					if (square.getPowerType() == Block.POWERUP_BOMB)
+					if (square.getPowerType() == PowerUp.POWERUP_BOMB)
 						grid[row][col].setBackground(blendColors(square.color(), Color.BLACK));
-					else if (square.getPowerType() == Block.POWERUP_ANTIBOMB)
+					else if (square.getPowerType() == PowerUp.POWERUP_ANTIBOMB)
 						grid[row][col].setBackground(blendColors(square.color(), Color.WHITE));
+					else if (square.getPowerType() == PowerUp.POWERUP_SCRAMBLE)
+						grid[row][col].setBackground(Color.orange);
+					else if (square.getPowerType() == PowerUp.POWERUP_REMOVE)
+						grid[row][col].setBackground(new Color(80, 0, 0));
 
 					// the block's border varies depending on if it is active and if it is the pivot
 					if(square.active())

@@ -87,6 +87,8 @@ public class Tetris implements ArrowListener
 	private Tetris opp = null;
 	private TetrisAI ai = null;
 	
+	private PowerUp currentPowerUp = null;
+	
 	public Tetris()
 	{
 		arrows = new boolean[4];
@@ -94,7 +96,7 @@ public class Tetris implements ArrowListener
 			arrows[i] = false;
 
 		env=new MyBoundedEnv(GAME_ROWS,GAME_COLS);
-		display=new BitmapBlockDisplay(env);
+		display=new JPanelBlockDisplay(env);
 		env2=new MyBoundedEnv(4,GAME_COLS);
 		display2=new JPanelBlockDisplay(env2);
 		display2.setTitle("Tetris! Next Shape");
@@ -119,7 +121,7 @@ public class Tetris implements ArrowListener
 			arrows[i] = false;
 
 		env=new MyBoundedEnv(GAME_ROWS,GAME_COLS);
-		display=new BitmapBlockDisplay(env);
+		display=new JPanelBlockDisplay(env);
 		env2=new MyBoundedEnv(4,GAME_COLS);
 		display2=new JPanelBlockDisplay(env2);
 		display2.setTitle("Tetris! Next Shape");
@@ -153,6 +155,10 @@ public class Tetris implements ArrowListener
 	public Tetrad nextRad()
 	{
 		return rad2;
+	}
+	public void setNextRad(Tetrad newRad)
+	{
+		rad2 = newRad;
 	}
 	
 	public void setOpponent(Tetris other)
@@ -201,7 +207,7 @@ public class Tetris implements ArrowListener
 				if (j != exclude)
 				{
 					Location a = new Location(i, j);
-					Block b = new Block(Color.GRAY);
+					Block b = new Block(Color.BLACK);
 					b.setLocation(a);
 					env.add(b);
 				}
@@ -212,10 +218,19 @@ public class Tetris implements ArrowListener
 		resetPendingRows();
 
 	}
+	public PowerUp setCurrentPowerUp(int powerType)
+	{
+		if (currentPowerUp == null) // to avoid conflicts
+		{
+			currentPowerUp = new PowerUp(this, env, env2, powerType);
+			return currentPowerUp;
+		}
+		return null;
+	}
 
 	public static void main(String[] args)
 	{
-		new Tetris();
+		Tetris game=new Tetris();
 		System.out.println("Game over!");
 	}
 	public boolean notLost()
@@ -232,11 +247,14 @@ public class Tetris implements ArrowListener
 		rad = null;
 		rad2=new Tetrad(env2);
 		rowsMoved = 0;
-		level = 0;
+		level = 1;
 		score = 0;
 		newTetrad();
 		display.showBlocks();
 		display2.showBlocks();
+		
+		currentPowerUp = null;
+		pendingRows = 0;
 	}
 
 	public boolean newTetrad()
@@ -309,7 +327,7 @@ public class Tetris implements ArrowListener
 					rowsMoved++;
 					score+=level;
 					if(score-(level*level*100)>0)
-						level++;
+						increaseLevel();;
 				}
 				display.setTitle("Tetris! Level: "+level+" Score: "+score);
 		}*/
@@ -333,7 +351,7 @@ public class Tetris implements ArrowListener
 			rowsMoved++;
 			score+=level;
 			if(score-(level*level*100)>0)
-				level++;
+				increaseLevel();;
 		}
 		display.setTitle("Tetris! Level: "+level+" Score: "+score);
 		}
@@ -425,7 +443,7 @@ public class Tetris implements ArrowListener
 			}
 			else
 			{
-				if(rad.blocks().length==1)
+				/*if(rad.blocks().length==1)
 				{
 					if(rad.blocks()[0].color()==Color.black)
 					{
@@ -441,7 +459,15 @@ public class Tetris implements ArrowListener
 				else
 				{
 					clearCompletedRows();
-				}
+				}*/
+				if (currentPowerUp != null && currentPowerUp.expiring())
+					currentPowerUp.afterAction();
+				
+				if (currentPowerUp != null && !currentPowerUp.expiring())
+					currentPowerUp.increaseTime();
+				else
+					currentPowerUp = null;
+				clearCompletedRows();
 				display.showBlocks();
 
 
@@ -452,6 +478,11 @@ public class Tetris implements ArrowListener
 				//else
 				//	rowsMoved=-1;
 				downEnd();
+				
+				if (currentPowerUp != null)
+					currentPowerUp.beforeAction();
+				
+				display.showBlocks();
 				boolean a=newTetrad();
 				if(!a)
 				{
@@ -461,7 +492,7 @@ public class Tetris implements ArrowListener
 				display.showBlocks();
 				score+=5*level;
 				if(score-(level*level*1000)>0)
-					level++;
+					increaseLevel();;
 				display.setTitle("Tetris! Level: "+level+" Score: "+score);
 /*				if(rad.moveDown())
 				{
@@ -564,17 +595,39 @@ public class Tetris implements ArrowListener
 			if(isCompletedRow(i))
 			{
 				int powerType = clearRow(i);
-				if (powerType == Block.POWERUP_BOMB || powerType == Block.POWERUP_ANTIBOMB)
+				if (powerType != PowerUp.POWERUP_NORMAL)
+				{
+					//System.out.println("gotcha");
+					if (PowerUp.mineOrOpp(powerType))
+					{
+
+						//System.out.println("NO!");
+						setCurrentPowerUp(powerType);
+						currentPowerUp.changeRad();
+					}
+					else
+					{
+						if (opp != null)
+						{
+							//System.out.println("hello?");
+							PowerUp p = opp.setCurrentPowerUp(powerType);
+							if (p != null)
+								p.changeRad();
+						}
+					}
+				}
+				/*if (powerType == PowerUp.POWERUP_BOMB || powerType == PowerUp.POWERUP_ANTIBOMB)
 				{
 					rad2 = new Tetrad(env2, powerType);
-				}
+				}*/
+				
 				a++;
 			}
 			for (int j = 0; j < env.numCols();j++)
 			{
 				Block b = (Block)env.objectAt(new Location(i, j));
 				if (b != null)
-					b.setPowerType(Block.POWERUP_NORMAL);
+					b.setPowerType(PowerUp.POWERUP_NORMAL);
 			}
 		}
 		if(a==1)
@@ -586,12 +639,18 @@ public class Tetris implements ArrowListener
 		if(a==4)
 			score+=1200*level;
 		if(score-(level*level*100)>0)
-			level++;
+			increaseLevel();;
 		display.setTitle("Tetris! Level: "+level+" Score: "+score);
 
 		// Penalize opponent!
 		if (opp != null && a > 1)
 			opp.increasePendingRows(a - 1);
+	}
+	public void increaseLevel()
+	{
+		level++;
+		if (opp != null && level % 5 == 0)
+			opp.increasePendingRows(1);
 	}
 
 	public void setLocationEnvTop(int x,int y)
