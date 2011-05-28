@@ -94,7 +94,7 @@ public class Tetris implements ArrowListener
 			arrows[i] = false;
 
 		env=new MyBoundedEnv(GAME_ROWS,GAME_COLS);
-		display=new JPanelBlockDisplay(env);
+		display=new BitmapBlockDisplay(env);
 		env2=new MyBoundedEnv(4,GAME_COLS);
 		display2=new JPanelBlockDisplay(env2);
 		display2.setTitle("Tetris! Next Shape");
@@ -119,7 +119,7 @@ public class Tetris implements ArrowListener
 			arrows[i] = false;
 
 		env=new MyBoundedEnv(GAME_ROWS,GAME_COLS);
-		display=new JPanelBlockDisplay(env);
+		display=new BitmapBlockDisplay(env);
 		env2=new MyBoundedEnv(4,GAME_COLS);
 		display2=new JPanelBlockDisplay(env2);
 		display2.setTitle("Tetris! Next Shape");

@@ -1,3 +1,4 @@
+import java.awt.Color;
 import java.awt.event.KeyEvent;
 
 import javax.swing.JFrame;
@@ -124,5 +125,17 @@ abstract public class BaseBlockDisplay implements BlockDisplay
 	{
 		frame.setTitle(title);
 	}
+	
+	/**
+	 * Calculates the RGB average of two colors
+	 * @param a First color
+	 * @param b Second color
+	 * @return A color with the average of the R, G, and B components of the arguments.
+	 */
+	protected static Color blendColors(Color a, Color b)
+	{
+		return new Color(( a.getRed()   + b.getRed()   ) / 2,
+		                 ( a.getGreen() + b.getGreen() ) / 2,
+		                 ( a.getBlue()  + b.getBlue()  ) / 2);
+	}
 }
-
