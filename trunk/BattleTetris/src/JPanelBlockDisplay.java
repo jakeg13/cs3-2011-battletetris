@@ -129,11 +129,6 @@ public class JPanelBlockDisplay extends BaseBlockDisplay
         frame.pack();
         frame.setVisible(true);
     }
-    
-    public static Color blendColors(Color a, Color b)
-    {
-    	return new Color((a.getRed() + b.getRed())/2, (a.getGreen() + b.getGreen())/2, (a.getBlue() + b.getBlue())/2);
-    }
 
 	//Redraws the board to include the pieces and border colors.
 	public void showBlocks()
