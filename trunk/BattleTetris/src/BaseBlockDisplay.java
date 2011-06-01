@@ -1,7 +1,7 @@
 import java.awt.Color;
 import java.awt.event.KeyEvent;
 
-import javax.swing.JFrame;
+import javax.swing.JPanel;
 
 
 abstract public class BaseBlockDisplay implements BlockDisplay
@@ -9,7 +9,7 @@ abstract public class BaseBlockDisplay implements BlockDisplay
 	protected static final int BLOCKWIDTH=25;
 	protected static final int BLOCKHEIGHT=25;
 	private ArrowListener listener;
-	protected JFrame frame;
+	protected JPanel frame;
 	
 	@Override
 	public final void setArrowListener(ArrowListener listener)
@@ -120,10 +120,16 @@ abstract public class BaseBlockDisplay implements BlockDisplay
 		frame.setLocation(x,y);
 	}
 
-	@Override
+	//@Override
+	public JPanel getPanel()
+	{
+		return frame;
+	}
+	
+	//@Override
 	public void setTitle(String title)
 	{
-		frame.setTitle(title);
+		//frame.setTitle(title);
 	}
 	
 	/**

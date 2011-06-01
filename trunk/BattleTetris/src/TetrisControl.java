@@ -25,18 +25,30 @@
  */
 
 import java.awt.*;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+
+import javax.swing.BorderFactory;
+import javax.swing.BoxLayout;
+import javax.swing.JFrame;
+import javax.swing.JPanel;
 
 // Used to display the contents of a game board
-public class TetrisControl implements ArrowListener
+public class TetrisControl implements ArrowListener, KeyListener
 {
 	public static int INTERVAL = 50; // ms
 
+	private ArrowListener listener = this;
+	
 	private Tetris player;
 	private Tetris opp;
 	private BlockDisplay play;
 	private boolean paused;
 	private boolean started=false;
 	private int startTime=0;
+	
+	private JFrame frame;
+	
 	public TetrisControl()
 	{
 		MyBoundedEnv env=new MyBoundedEnv(1,9);
@@ -66,7 +78,21 @@ public class TetrisControl implements ArrowListener
 
 		play=new JPanelBlockDisplay(env);
 		play.setArrowListener(this);
-		play.setLocation(450,100);
+		
+		frame = new JFrame();
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		JPanel p = new JPanel();
+		p.setLayout(new GridLayout(1, 2));
+		p.add(opp.getPanel());
+		p.add(player.getPanel());
+		frame.setContentPane(p);
+		//frame.getContentPane().add(play.getPanel());
+		frame.addKeyListener(this);
+		
+		frame.pack();
+		frame.setVisible(true);
+		
+		frame.setLocation(450,100);
 
 		update();
 		run();
@@ -97,19 +123,41 @@ public class TetrisControl implements ArrowListener
 		player.setOpponent(opp);
 		opp.setOpponent(player);
 		
-		new TetrisHeuristicAI(opp);
-		//new TetrisHeuristicAI(player);
+		new TetrisHeuristicAI2(opp);
+		new TetrisHeuristicAI2(player);
 
 
 		play=new JPanelBlockDisplay(env);
 		play.setArrowListener(this);
-		play.setLocation(450,100);
+		
+		frame = new JFrame();
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		JPanel p = new JPanel();
+		p.setLayout(new GridLayout(1, 2));
+		p.add(opp.getPanel());
+		p.add(player.getPanel());
+		frame.setContentPane(p);
+		//frame.getContentPane().add(play.getPanel());
+		frame.addKeyListener(this);
+		
+		frame.pack();
+		frame.setVisible(true);
+		
+		//frame.setLocation(450,100);
+		frame.setSize(500, 700);
+		frame.setLocation(300, 20);
 
 		update();
 		run();
 	}
 	public void update()
 	{
+		if (paused)
+			frame.setTitle("Battle Tetris! Left: " + opp.getLevel() + "." + opp.getScore() +
+				" Right: " + player.getLevel() + "." + player.getScore() + " PAUSED");
+		else
+			frame.setTitle("Battle Tetris! Left: " + opp.getLevel() + "." + opp.getScore() +
+				" Right: " + player.getLevel() + "." + player.getScore());
 /*		if(paused)
 			play.setTitle("Left: "+player.counter()/TriadTowers.DROPRATIO+" TriadTowers Input Module: "+"Right: "+opp.counter()/TriadTowers.DROPRATIO+" Paused!");
 		else
@@ -135,6 +183,8 @@ public class TetrisControl implements ArrowListener
 		startTime=0;
 		boolean pNotLost=true;
 		boolean oNotLost=true;
+		
+		frame.setTitle("Battle Tetris!");
 		while(pNotLost&&oNotLost)
 		{
 			play();
@@ -167,10 +217,10 @@ public class TetrisControl implements ArrowListener
 //			player.update();
 			System.out.println("\n\n"+a);
 		}
-		play.setTitle("TriadTowers: "+a);
+		frame.setTitle("Battle Tetris! " + a);
 		System.out.println("***Player Statistics***");
-//		opp.printStats("Left side player");
-//		player.printStats("Right side player");
+		opp.printStats("Left side player");
+		player.printStats("Right side player");
 		System.out.println("Time spent: "+startTime/1000+" seconds");
 	}
 	public void play()
@@ -368,5 +418,103 @@ public class TetrisControl implements ArrowListener
 			game.run();
 		}
 	}
+	
+	@Override
+	public final void keyPressed(KeyEvent e)
+	{
+		if (listener == null)
+		{
+			return;
+		}
+		
+		try
+		{
+			Thread.sleep(10);
+			switch (e.getKeyCode())
+			{
+			case KeyEvent.VK_LEFT:
+				listener.leftPressed();
+				break;
+			case KeyEvent.VK_RIGHT:
+				listener.rightPressed();
+				break;
+			case KeyEvent.VK_DOWN:
+				listener.downStart();
+				break;
+			case KeyEvent.VK_COMMA:
+				listener.commaPressed();
+				break;
+			case KeyEvent.VK_UP:
+				listener.upPressed();
+				break;
+			case KeyEvent.VK_PERIOD:
+				listener.periodPressed();
+				break;
+			case KeyEvent.VK_SPACE:
+				listener.spacePressed();
+				break;
+			case KeyEvent.VK_ENTER:
+				listener.enterPressed();
+				break;
+			case KeyEvent.VK_P:
+				listener.pPressed();
+				break;
+			case KeyEvent.VK_Q:
+				listener.qPressed();
+				break;
+			case KeyEvent.VK_W:
+				listener.wPressed();
+				break;
+			case KeyEvent.VK_E:
+				listener.ePressed();
+				break;
+			case KeyEvent.VK_S:
+				listener.sStart();
+				break;
+			case KeyEvent.VK_A:
+				listener.aPressed();
+				break;
+			case KeyEvent.VK_D:
+				listener.dPressed();
+				break;
+			}
+		}
+		catch(InterruptedException f)
+		{
+		}
+	}
+
+	@Override
+	public final void keyReleased(KeyEvent e)
+	{
+		if (listener == null)
+		{
+			return;
+		}
+		
+		try
+		{
+			Thread.sleep(10);
+			switch (e.getKeyCode())
+			{
+			case KeyEvent.VK_DOWN:
+				listener.downEnd();
+				break;
+			case KeyEvent.VK_S:
+				listener.sEnd();
+				break;
+			}
+		}
+		catch(InterruptedException f)
+		{
+		}
+	}
+
+	@Override
+	public final void keyTyped(KeyEvent e)
+	{
+		// Do nothing
+	}
+
 	
 }

@@ -135,7 +135,7 @@ public class PowerUp {
 	
 	private void scramble()
 	{
-		for (int i = env1.numRows() / 2; i < env1.numRows(); i++)
+		for (int i = 2 * env1.numRows() / 3; i < env1.numRows(); i++)
 			for (int k = env1.numCols() - 1; k > 0; k--)
 			{
 				int j = (int)Math.floor(Math.random() * (k+1));
