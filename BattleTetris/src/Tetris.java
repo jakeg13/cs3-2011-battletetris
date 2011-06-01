@@ -63,6 +63,11 @@
 
 import java.awt.*;
 
+import javax.swing.BorderFactory;
+import javax.swing.BoxLayout;
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+
 // Used to display the contents of a game board
 public class Tetris implements ArrowListener
 {
@@ -74,8 +79,11 @@ public class Tetris implements ArrowListener
 	private Tetrad rad2;
 	private int score;
 	private int level;
+	private int[] stats = new int[5]; // num 1's, 2's, 3's, 4's, and rowsSent
 	private int rowsMoved;
 	private boolean paused;
+	private JFrame frame;
+	private JPanel panelPanel;
 
 	private boolean[] arrows; // 0 is up, 1 is left, 2 is right, 3 is down
 
@@ -95,24 +103,43 @@ public class Tetris implements ArrowListener
 		for (int i = 0; i < arrows.length; i++)
 			arrows[i] = false;
 
+		
+		
 		env=new MyBoundedEnv(GAME_ROWS,GAME_COLS);
 		display=new JPanelBlockDisplay(env);
 		env2=new MyBoundedEnv(4,GAME_COLS);
 		display2=new JPanelBlockDisplay(env2);
-		display2.setTitle("Tetris! Next Shape");
+		//display2.setTitle("Tetris! Next Shape");
+		
+		frame = new JFrame();
+		JPanel p = new JPanel();
+		p.setLayout(new BoxLayout(p, BoxLayout.PAGE_AXIS));
+		p.add(display2.getPanel());
+		p.add(display.getPanel());
+		p.setBorder(BorderFactory.createEmptyBorder(10,10,10,10));
+		
+		panelPanel = p;
+		
+		frame.setContentPane(p);
+		frame.addKeyListener(display);
+		
+		frame.pack();
+		frame.setVisible(true);
+		
 		score=0;
 		level=1;
-		display.setTitle("Tetris! Level: "+level+" Score: "+score);
+		frame.setTitle("Tetris! Level: "+level+" Score: "+score);
 		display.setArrowListener(this);
 		rad2=new Tetrad(env2);
 		newTetrad();
 		display.showBlocks();
 		rowsMoved=1;
 		paused=true;
+		
 		while(notLost())
 			play();
 		rad=null;
-		display.setTitle("Tetris! Level: "+level+" Score: "+score+" Game Over!");
+		frame.setTitle("Tetris! Level: "+level+" Score: "+score+" Game Over!");
 	}
 	public Tetris(int runLater)
 	{
@@ -124,10 +151,28 @@ public class Tetris implements ArrowListener
 		display=new JPanelBlockDisplay(env);
 		env2=new MyBoundedEnv(4,GAME_COLS);
 		display2=new JPanelBlockDisplay(env2);
-		display2.setTitle("Tetris! Next Shape");
+		//display2.setTitle("Tetris! Next Shape");
+		
+		frame = new JFrame();
+		JPanel p = new JPanel();
+		p.setLayout(new BoxLayout(p, BoxLayout.PAGE_AXIS));
+		p.add(display2.getPanel());
+		p.add(display.getPanel());
+		p.setBorder(BorderFactory.createEmptyBorder(10,10,10,10));
+		
+		panelPanel = p;
+		
+		/*frame.setContentPane(p);
+		frame.addKeyListener(display);
+		
+		frame.pack();
+		frame.setVisible(true);*/
+		
+		
+		
 		score=0;
 		level=1;
-		display.setTitle("Tetris! Level: "+level+" Score: "+score);
+		frame.setTitle("Tetris! Level: "+level+" Score: "+score);
 		display.setArrowListener(this);
 		rad2=new Tetrad(env2);
 		newTetrad();
@@ -137,7 +182,30 @@ public class Tetris implements ArrowListener
 		//while(notLost())
 		//	play();
 		//rad=null;
-		//display.setTitle("Tetris! Level: "+level+" Score: "+score+" Game Over!");
+		//frame.setTitle("Tetris! Level: "+level+" Score: "+score+" Game Over!");
+	}
+	
+	public JPanel getPanel()
+	{
+		return panelPanel;
+	}
+	public int getLevel()
+	{
+		return level;
+	}
+	public int getScore()
+	{
+		return score;
+	}
+	public void printStats(String prepend)
+	{
+		System.out.println(prepend + " Level: " + level);
+		System.out.println(prepend + " Score: " + score);
+		System.out.println(prepend + " Singles: " + stats[0]);
+		System.out.println(prepend + " Doubles: " + stats[1]);
+		System.out.println(prepend + " Triples: " + stats[2]);
+		System.out.println(prepend + " Tetrises: " + stats[3]);
+		System.out.println(prepend + " Rows Sent: " + stats[4]);
 	}
 
 	public void setAI(TetrisAI ai)
@@ -237,7 +305,7 @@ public class Tetris implements ArrowListener
 	{
 		if(rowsMoved!=-1)
 			return true;
-		display.setTitle("Tetris! Level: "+level+" Score: "+score+" Game Over!");
+		frame.setTitle("Tetris! Level: "+level+" Score: "+score+" Game Over!");
 		return false;
 	}
 	public void restart()
@@ -249,6 +317,7 @@ public class Tetris implements ArrowListener
 		rowsMoved = 0;
 		level = 1;
 		score = 0;
+		stats = new int[5];
 		newTetrad();
 		display.showBlocks();
 		display2.showBlocks();
@@ -329,7 +398,7 @@ public class Tetris implements ArrowListener
 					if(score-(level*level*100)>0)
 						increaseLevel();;
 				}
-				display.setTitle("Tetris! Level: "+level+" Score: "+score);
+				frame.setTitle("Tetris! Level: "+level+" Score: "+score);
 		}*/
 		arrows[3] = true;
 		if (opp == null)
@@ -353,16 +422,16 @@ public class Tetris implements ArrowListener
 			if(score-(level*level*100)>0)
 				increaseLevel();;
 		}
-		display.setTitle("Tetris! Level: "+level+" Score: "+score);
+		frame.setTitle("Tetris! Level: "+level+" Score: "+score);
 		}
 	}
 	public void pPressed()
 	{
 		paused=!paused;
 		if(paused)
-			display.setTitle("Tetris! Level: "+level+" Score: "+score+" Paused!");
+			frame.setTitle("Tetris! Level: "+level+" Score: "+score+" Paused!");
 		else
-			display.setTitle("Tetris! Level: "+level+" Score: "+score+" Resuming...");
+			frame.setTitle("Tetris! Level: "+level+" Score: "+score+" Resuming...");
 	}
 	public void spacePressed()
 	{
@@ -371,10 +440,10 @@ public class Tetris implements ArrowListener
 			blowUp();
 			boolean a=newTetrad();
 			display.showBlocks();
-			display.setTitle("Tetris! Level: "+level+" Score: "+score+" Kaboom!");
+			frame.setTitle("Tetris! Level: "+level+" Score: "+score+" Kaboom!");
 			if(!a)
 			{
-				display.setTitle("Tetris! Level: "+level+" Score: "+score+" Game Over!");
+				frame.setTitle("Tetris! Level: "+level+" Score: "+score+" Game Over!");
 				rowsMoved=-10;
 			}
 		}
@@ -385,10 +454,10 @@ public class Tetris implements ArrowListener
 			clearCompletedRows();
 			boolean a=newTetrad();
 			display.showBlocks();
-			display.setTitle("Tetris! Level: "+level+" Score: "+score+" Pop!");
+			frame.setTitle("Tetris! Level: "+level+" Score: "+score+" Pop!");
 			if(!a)
 			{
-				display.setTitle("Tetris! Level: "+level+" Score: "+score+" Game Over!");
+				frame.setTitle("Tetris! Level: "+level+" Score: "+score+" Game Over!");
 				rowsMoved=-10;
 			}
 		}
@@ -486,14 +555,14 @@ public class Tetris implements ArrowListener
 				boolean a=newTetrad();
 				if(!a)
 				{
-					display.setTitle("Tetris! Level: "+level+" Score: "+score+" Game Over!");
+					frame.setTitle("Tetris! Level: "+level+" Score: "+score+" Game Over!");
 					rowsMoved=-1;
 				}
 				display.showBlocks();
 				score+=5*level;
 				if(score-(level*level*1000)>0)
 					increaseLevel();;
-				display.setTitle("Tetris! Level: "+level+" Score: "+score);
+				frame.setTitle("Tetris! Level: "+level+" Score: "+score);
 /*				if(rad.moveDown())
 				{
 					display.showBlocks();
@@ -525,7 +594,7 @@ public class Tetris implements ArrowListener
 				}
 			}
 		display.showBlocks();
-		display.setTitle("Tetris! Level: "+level+" Score: "+score);
+		frame.setTitle("Tetris! Level: "+level+" Score: "+score);
 	}
 	private void blowDown()
 	{
@@ -546,7 +615,7 @@ public class Tetris implements ArrowListener
 				}
 			}
 		display.showBlocks();
-		display.setTitle("Tetris! Level: "+level+" Score: "+score);
+		frame.setTitle("Tetris! Level: "+level+" Score: "+score);
 	}
 	private boolean isCompletedRow(int row)
 	{
@@ -631,35 +700,53 @@ public class Tetris implements ArrowListener
 			}
 		}
 		if(a==1)
+		{
 			score+=40*level;
+			stats[0]++;
+		}
 		if(a==2)
+		{
 			score+=100*level;
+			stats[1]++;
+		}
 		if(a==3)
+		{
 			score+=300*level;
+			stats[2]++;
+		}
 		if(a==4)
+		{
 			score+=1200*level;
+			stats[3]++;
+		}
 		if(score-(level*level*100)>0)
 			increaseLevel();;
-		display.setTitle("Tetris! Level: "+level+" Score: "+score);
+		frame.setTitle("Tetris! Level: "+level+" Score: "+score);
 
 		// Penalize opponent!
 		if (opp != null && a > 1)
+		{
 			opp.increasePendingRows(a - 1);
+			stats[4]+=a-1;
+		}
 	}
 	public void increaseLevel()
 	{
 		level++;
 		if (opp != null && level % 5 == 0)
+		{
 			opp.increasePendingRows(1);
+			stats[4]++;
+		}
 	}
 
 	public void setLocationEnvTop(int x,int y)
 	{
-		display2.setLocation(x,y);
+		frame.setLocation(x, y);//display2.setLocation(x,y);
 	}
 	public void setLocationEnvBottom(int x,int y)
 	{
-		display.setLocation(x,y);
+		//display.setLocation(x,y);
 	}
 
 }

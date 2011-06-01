@@ -6,6 +6,7 @@ import java.util.Random;
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
 public class BitmapBlockDisplay extends BaseBlockDisplay
@@ -41,16 +42,16 @@ public class BitmapBlockDisplay extends BaseBlockDisplay
 	}
 	
 	protected void createAndShowGUI() {
-		frame = new JFrame();
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame = new JPanel();//new JFrame();
+		//frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		
 		image = new JLabel();
 		
-		frame.getContentPane().add(image);
+		frame.add(image);
 		
 		showBlocks();
 		
-		frame.pack();
+		//frame.pack();
 		frame.setVisible(true);
 	}
 
@@ -64,8 +65,8 @@ public class BitmapBlockDisplay extends BaseBlockDisplay
 		graphics.setColor(Color.gray);
 		graphics.drawRect(0, 0, width - 1, height - 1);
 		
-		System.out.println(board.numRows());
-		System.out.println(board.numCols());
+		//System.out.println(board.numRows());
+		//System.out.println(board.numCols());
 		
 		
 		for (int i = 0; i < 100; i++)

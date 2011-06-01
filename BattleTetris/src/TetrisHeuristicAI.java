@@ -269,10 +269,17 @@ public class TetrisHeuristicAI implements TetrisAI {
 				for (int j = 0; j < g[0].length; j++)
 				{
 					Location loc = new Location(i, j);
-					Block b = (Block)board.objectAt(loc); // could be null
-					if (b != null && b.getPowerType() != PowerUp.POWERUP_NORMAL)
+					
+					// If it matches the location of one of our current blocks
+					// Then if that block is actually a power up block, give a bonus!
+					for (int k = 0; k < curLocs.length; k++)
 					{
-						sum += numBlocks * numBlocks;
+						if (curLocs[k].equals(loc))
+						{
+							Block b = curRad.blocks()[k];
+							if (b.getPowerType() != PowerUp.POWERUP_NORMAL)
+								sum += numBlocks * numBlocks;
+						}
 					}
 				}
 			}

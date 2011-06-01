@@ -66,20 +66,20 @@ public class JPanelBlockDisplay extends BaseBlockDisplay
 		this.special = special;
 		this.board = board;
 		
-		frame = new JFrame();
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame = new JPanel();//new JFrame();
+        //frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         
 		grid = new JPanel[board.numRows()][board.numCols()];
 
         //Schedule a job for the event-dispatching thread:
         //creating and showing this application's GUI.
-        SwingUtilities.invokeLater(new Runnable()
-        {
-            public void run()
-            {
+        //SwingUtilities.invokeLater(new Runnable()
+        //{
+        //    public void run()
+        //    {
                 createAndShowGUI();
-            }
-        });
+        //    }
+        //});
 
 		//Wait until display has been drawn
         try
@@ -102,12 +102,12 @@ public class JPanelBlockDisplay extends BaseBlockDisplay
     private void createAndShowGUI()
     {
                 //Create and set up the window.
-        frame = new JFrame();
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        //frame = new JFrame();
+        //frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         if(!special)
-        	frame.getContentPane().setLayout(new GridLayout(board.numRows(), board.numCols()));
+        	frame.setLayout(new GridLayout(board.numRows(), board.numCols()));
         else
-        	frame.getContentPane().setLayout(new GridLayout(board.numRows()-1, board.numCols()));
+        	frame.setLayout(new GridLayout(board.numRows()-1, board.numCols()));
         frame.addKeyListener(this);
 
 		//Create each square component.
@@ -118,7 +118,7 @@ public class JPanelBlockDisplay extends BaseBlockDisplay
 				grid[row][col] = new JPanel();
 				//grid[row][col].setBackground(Color.WHITE);
 				grid[row][col].setPreferredSize(new Dimension(BLOCKWIDTH, BLOCKHEIGHT));
-				frame.getContentPane().add(grid[row][col]);
+				frame.add(grid[row][col]);
 			}
 		}
 
@@ -126,7 +126,7 @@ public class JPanelBlockDisplay extends BaseBlockDisplay
 		showBlocks();
 
         //Display the window.
-        frame.pack();
+        //frame.pack();
         frame.setVisible(true);
     }
 
