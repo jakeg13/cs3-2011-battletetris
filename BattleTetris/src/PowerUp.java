@@ -9,6 +9,8 @@ public class PowerUp {
 	public static final int POWERUP_SCRAMBLE = 3;
 	public static final int POWERUP_REMOVE = 4;
 	
+	public static final int NUM_POWERUPS = 4;
+	
 	private Tetris tetris;
 	private MyBoundedEnv env1;
 	private MyBoundedEnv env2;
@@ -22,6 +24,24 @@ public class PowerUp {
 		powerUpType = type;
 		this.env1 = env1;
 		this.env2 = env2;
+	}
+	public static String getImageName(int powerUp)
+	{
+		switch(powerUp)
+		{
+			case POWERUP_NORMAL:
+				return "";
+			case POWERUP_BOMB:
+				return "src/images/Bomb Icon.jpg";
+			case POWERUP_ANTIBOMB:
+				return "src/images/poof_icon.png";
+			case POWERUP_SCRAMBLE:
+				return "src/images/icon_scramble.gif";
+			case POWERUP_REMOVE:
+				return "src/images/Arrow down Icon.jpg";
+			default:
+				return "";
+		}
 	}
 	public static boolean mineOrOpp(int powerUp)
 	{
@@ -71,8 +91,10 @@ public class PowerUp {
 				break;
 			case POWERUP_SCRAMBLE:
 				scramble();
+				break;
 			case POWERUP_REMOVE:
 				removeRow();
+				break;
 			default:
 				break;
 		}

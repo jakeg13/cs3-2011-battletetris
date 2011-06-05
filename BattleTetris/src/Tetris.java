@@ -130,7 +130,7 @@ public class Tetris implements ArrowListener
 		level=1;
 		frame.setTitle("Tetris! Level: "+level+" Score: "+score);
 		display.setArrowListener(this);
-		rad2=new Tetrad(env2);
+		rad2=new Tetrad(env2, true);
 		newTetrad();
 		display.showBlocks();
 		rowsMoved=1;
@@ -174,7 +174,7 @@ public class Tetris implements ArrowListener
 		level=1;
 		frame.setTitle("Tetris! Level: "+level+" Score: "+score);
 		display.setArrowListener(this);
-		rad2=new Tetrad(env2);
+		rad2=new Tetrad(env2, true);
 		newTetrad();
 		display.showBlocks();
 		rowsMoved=1;
@@ -313,7 +313,7 @@ public class Tetris implements ArrowListener
 		env.clearAll();
 		env2.clearAll();
 		rad = null;
-		rad2=new Tetrad(env2);
+		rad2=new Tetrad(env2, true);
 		rowsMoved = 0;
 		level = 1;
 		score = 0;
@@ -330,6 +330,7 @@ public class Tetris implements ArrowListener
 	{
 		if (rad != null)
 			rad.activate();
+		Tetrad oldRad = rad;
 
 		rad=rad2.changeEnv(env); // oh dear what if I press down right now?! Then overlap => premature gameover
 
@@ -337,7 +338,7 @@ public class Tetris implements ArrowListener
 
 		env2.clearAll();
 		display2.showBlocks();
-		rad2=new Tetrad(env2);
+		rad2=new Tetrad(env2, oldRad);
 		Locatable[] b=rad2.blocks();
 		for(int i=0;i<b.length;i++)
 		{
@@ -561,7 +562,7 @@ public class Tetris implements ArrowListener
 				display.showBlocks();
 				score+=5*level;
 				if(score-(level*level*1000)>0)
-					increaseLevel();;
+					increaseLevel();
 				frame.setTitle("Tetris! Level: "+level+" Score: "+score);
 /*				if(rad.moveDown())
 				{
@@ -664,8 +665,9 @@ public class Tetris implements ArrowListener
 			if(isCompletedRow(i))
 			{
 				int powerType = clearRow(i);
-				if (powerType != PowerUp.POWERUP_NORMAL)
+				if (powerType != PowerUp.POWERUP_NORMAL && rad.blocks().length > 1)
 				{
+					
 					//System.out.println("gotcha");
 					if (PowerUp.mineOrOpp(powerType))
 					{
@@ -719,8 +721,8 @@ public class Tetris implements ArrowListener
 			score+=1200*level;
 			stats[3]++;
 		}
-		if(score-(level*level*100)>0)
-			increaseLevel();;
+		while(score-(level*level*100)>0)
+			increaseLevel();
 		frame.setTitle("Tetris! Level: "+level+" Score: "+score);
 
 		// Penalize opponent!

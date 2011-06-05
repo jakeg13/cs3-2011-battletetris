@@ -53,11 +53,36 @@ public class Tetrad
 	private MyBoundedEnv theirEnv;
 	private Block[] blocks;
 	
-	public static final double POWERUP_CHANCE = 0.6;
+	public static final double POWERUP_CHANCE = 0.25;
 	
 	public Tetrad(MyBoundedEnv their)
 	{
 		Color a=pickColor();
+		this.setLocation(a);
+		theirEnv=their;
+		
+		randomizePowerUp();
+		
+	}
+	
+	// Deal a Tetrad fairly; do not give a O, S, or Z piece
+	public Tetrad(MyBoundedEnv their, boolean TGM)
+	{
+		Color a = Color.CYAN;
+		while (a==Color.cyan || a==Color.green || a==Color.blue)
+			a = pickColor();
+		this.setLocation(a);
+		theirEnv=their;
+		
+		randomizePowerUp();
+		
+	}
+	// Deal a Tetrad fairly; try once to not repeat the oldRad's color
+	public Tetrad(MyBoundedEnv their, Tetrad oldRad)
+	{
+		Color a = pickColor();
+		if (oldRad != null && oldRad.blocks()[0].color() == a && Math.random() < .5)
+			a = pickColor();
 		this.setLocation(a);
 		theirEnv=their;
 		
@@ -75,6 +100,7 @@ public class Tetrad
 			Color a=pickColor();
 			this.setLocation(a);
 		}
+		blocks[0].setPowerType(pwrType);
 		theirEnv=their;		
 	}
 	public Tetrad changeEnv(MyBoundedEnv pass)
