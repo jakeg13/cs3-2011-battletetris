@@ -53,7 +53,7 @@ public class JPanelBlockDisplay extends BaseBlockDisplay
 	public static int BLOCKHEIGHT=25;
 
 	private MyBoundedEnv board;
-	private JPanel[][] grid;
+	private DrawImage[][] grid;
 	private boolean special;
 
 	// Constructs a new display for displaying the given board
@@ -69,7 +69,7 @@ public class JPanelBlockDisplay extends BaseBlockDisplay
 		frame = new JPanel();//new JFrame();
         //frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         
-		grid = new JPanel[board.numRows()][board.numCols()];
+		grid = new DrawImage[board.numRows()][board.numCols()];
 
         //Schedule a job for the event-dispatching thread:
         //creating and showing this application's GUI.
@@ -115,7 +115,7 @@ public class JPanelBlockDisplay extends BaseBlockDisplay
         {
         	for (int col = 0; col < grid[row].length; col++)
         	{
-				grid[row][col] = new JPanel();
+				grid[row][col] = new DrawImage();
 				//grid[row][col].setBackground(Color.WHITE);
 				grid[row][col].setPreferredSize(new Dimension(BLOCKWIDTH, BLOCKHEIGHT));
 				frame.add(grid[row][col]);
@@ -144,21 +144,23 @@ public class JPanelBlockDisplay extends BaseBlockDisplay
 				if (square == null) //use a dark gray background if no block is there.
 				{
 					grid[row][col].setBackground(Color.DARK_GRAY);
-					grid[row][col].setForeground(new Color(Color.GRAY.getRed(),Color.GRAY.getGreen(),Color.GRAY.getBlue(),200));
+					//grid[row][col].setForeground(new Color(Color.GRAY.getRed(),Color.GRAY.getGreen(),Color.GRAY.getBlue(),200));
 					grid[row][col].setBorder(null);
+					grid[row][col].setImage(PowerUp.POWERUP_NORMAL);
 				}
 				else // the background is the block's color.
 				{
 					grid[row][col].setBackground(square.color());
 					
-					if (square.getPowerType() == PowerUp.POWERUP_BOMB)
+					/*if (square.getPowerType() == PowerUp.POWERUP_BOMB)
 						grid[row][col].setBackground(blendColors(square.color(), Color.BLACK));
 					else if (square.getPowerType() == PowerUp.POWERUP_ANTIBOMB)
 						grid[row][col].setBackground(blendColors(square.color(), Color.WHITE));
 					else if (square.getPowerType() == PowerUp.POWERUP_SCRAMBLE)
 						grid[row][col].setBackground(Color.orange);
 					else if (square.getPowerType() == PowerUp.POWERUP_REMOVE)
-						grid[row][col].setBackground(new Color(80, 0, 0));
+						grid[row][col].setBackground(new Color(80, 0, 0));*/
+					grid[row][col].setImage(square.getPowerType());
 
 					// the block's border varies depending on if it is active and if it is the pivot
 					if(square.active())

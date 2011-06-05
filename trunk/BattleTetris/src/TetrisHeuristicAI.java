@@ -33,7 +33,7 @@ public class TetrisHeuristicAI implements TetrisAI {
 	public void think() {
 		// TODO Auto-generated method stub
 		
-		//System.out.println("thinking");
+		////System.out.println("thinking");
 		
 		if (curRad == tetris.currentRad())
 		{
@@ -89,11 +89,11 @@ public class TetrisHeuristicAI implements TetrisAI {
 				int countDown = 0;
 				while (down)
 				{
-					//System.out.println(countDown);
+					////System.out.println(countDown);
 					for (int L = 0; L < currentLocs.length; L++)
 					{
 						Location loc = currentLocs[L];
-						//System.out.println(loc);
+						////System.out.println(loc);
 						if (loc.row() >= 0 && (loc.row() >= g.length || g[loc.row()][loc.col()] == 1))
 						{
 							down = false; // shift back up 1 since we went 1 too far
@@ -161,7 +161,7 @@ public class TetrisHeuristicAI implements TetrisAI {
 				}
 				
 				int weight = computeBoardWeight(g, currentLocs);
-				System.out.println("Candidates: " + weight + " " + r + " " + i + " " + avgHeight(g));
+				//System.out.println("Candidates: " + weight + " " + r + " " + i + " " + avgHeight(g));
 				
 				for (int rx = 0; rx < g.length; rx++)
 					for (int j = 0; j < g[0].length; j++)
@@ -186,7 +186,7 @@ public class TetrisHeuristicAI implements TetrisAI {
 		desValues[0] = bestWeight;
 		desValues[1] = bestR;
 		desValues[2] = bestI;
-		System.out.println(desValues[0] + " " + desValues[1] + " " + desValues[2]);
+		//System.out.println(desValues[0] + " " + desValues[1] + " " + desValues[2]);
 		curValues = new int[3];
 	}
 	

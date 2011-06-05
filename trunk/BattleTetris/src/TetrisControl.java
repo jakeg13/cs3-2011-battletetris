@@ -124,7 +124,7 @@ public class TetrisControl implements ArrowListener, KeyListener
 		opp.setOpponent(player);
 		
 		new TetrisHeuristicAI2(opp);
-		new TetrisHeuristicAI2(player);
+		//new TetrisHeuristicAI2(player);
 
 
 		play=new JPanelBlockDisplay(env);
