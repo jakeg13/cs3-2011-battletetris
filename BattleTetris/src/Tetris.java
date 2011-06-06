@@ -93,7 +93,7 @@ public class Tetris implements ArrowListener
 	private int pendingRows = 0;
 
 	private Tetris opp = null;
-	private TetrisAI ai = null;
+	public TetrisAI ai = null;
 	
 	private PowerUp currentPowerUp = null;
 	
@@ -270,9 +270,13 @@ public class Tetris implements ArrowListener
 		for (int i = env.numRows() - pendingRows; i < env.numRows(); i++)
 		{
 			int exclude = (int)(Math.random()*env.numCols());
+			int alsoExclude = -1;
+			
+			if (Math.random() < .25)
+				alsoExclude = (int)(Math.random()*env.numCols());
 			for (int j = 0; j < env.numCols(); j++)
 			{
-				if (j != exclude)
+				if (j != exclude && j != alsoExclude)
 				{
 					Location a = new Location(i, j);
 					Block b = new Block(Color.BLACK);
@@ -419,9 +423,9 @@ public class Tetris implements ArrowListener
 		{
 			display.showBlocks();
 			rowsMoved++;
-			score+=level;
+			/*score+=level;
 			if(score-(level*level*100)>0)
-				increaseLevel();;
+				increaseLevel();*/
 		}
 		frame.setTitle("Tetris! Level: "+level+" Score: "+score);
 		}
@@ -665,7 +669,7 @@ public class Tetris implements ArrowListener
 			if(isCompletedRow(i))
 			{
 				int powerType = clearRow(i);
-				if (powerType != PowerUp.POWERUP_NORMAL && rad.blocks().length > 1)
+				if (powerType != PowerUp.POWERUP_NORMAL)
 				{
 					
 					//System.out.println("gotcha");
@@ -735,7 +739,7 @@ public class Tetris implements ArrowListener
 	public void increaseLevel()
 	{
 		level++;
-		if (opp != null && level % 5 == 0)
+		if (opp != null && level % 4 == 0)
 		{
 			opp.increasePendingRows(1);
 			stats[4]++;

@@ -17,7 +17,7 @@ public class TetrisHeuristicAI2 extends  TetrisHeuristicAI {
 	{
 		super(t);
 	}
-	protected int computeBoardWeight(int[][] g, Location[] curLocs)
+	/*protected int computeBoardWeight(int[][] g, Location[] curLocs)
 	{		
 		int penalty = 0; // num holes
 		int penalty2 = 0; // num caverns [columns with 3 blanks on top of each other]
@@ -103,5 +103,5 @@ public class TetrisHeuristicAI2 extends  TetrisHeuristicAI {
 					return false;
 		}
 		return true;
-	}
+	}*/
 }
