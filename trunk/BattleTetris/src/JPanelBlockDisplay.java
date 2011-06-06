@@ -175,5 +175,7 @@ public class JPanelBlockDisplay extends BaseBlockDisplay
 					
 				}
 			}
+
+		frame.setBorder(BorderFactory.createLineBorder(Color.WHITE,2));
 	}
 }

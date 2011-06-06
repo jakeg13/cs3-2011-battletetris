@@ -3,13 +3,15 @@ import java.awt.Color;
 
 public class PowerUp {
 	
+	public static final int POWERUP_WELCOME = 10;
+	
 	public static final int POWERUP_NORMAL = 0;
 	public static final int POWERUP_BOMB = 1;
 	public static final int POWERUP_ANTIBOMB = 2;
 	public static final int POWERUP_SCRAMBLE = 3;
 	public static final int POWERUP_REMOVE = 4;
 	
-	public static final int NUM_POWERUPS = 4;
+	public static final int NUM_POWERUPS = 10;
 	
 	private Tetris tetris;
 	private MyBoundedEnv env1;
@@ -29,6 +31,8 @@ public class PowerUp {
 	{
 		switch(powerUp)
 		{
+			case POWERUP_WELCOME:
+				return "src/images/battletetris.png";
 			case POWERUP_NORMAL:
 				return "";
 			case POWERUP_BOMB:
@@ -139,6 +143,7 @@ public class PowerUp {
 	private void blowDown()
 	{
 		Block a=tetris.currentRad().blocks()[0];
+		//a.setPowerType(POWERUP_NORMAL); // fixes popcorn chaining
 		Location loc=a.location();
 		int row=loc.row();
 		int col=loc.col();
@@ -187,11 +192,13 @@ public class PowerUp {
 	}
 	private void removeRow()
 	{
-		for(int i = env1.numRows() - 1; i >= 0; i--)
+		int NUM_ROWS_REMOVED = 2;
+		
+		for(int i = env1.numRows() - NUM_ROWS_REMOVED; i >= 0; i--)
 			for (int j = 0; j < env1.numCols(); j++)
 			{
 				Location loc = new Location(i, j);
-				Location locNew = new Location(i+1, j);
+				Location locNew = new Location(i+NUM_ROWS_REMOVED, j);
 				Block b = (Block)env1.objectAt(loc);
 				
 				if (b != null)

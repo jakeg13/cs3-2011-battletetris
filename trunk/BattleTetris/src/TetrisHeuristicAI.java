@@ -230,16 +230,24 @@ public class TetrisHeuristicAI implements TetrisAI {
 		int sum = 0;
 		int numBlocks = doubleAdd(g);
 		
-		for (int j = 0; j < g[0].length; j++)
+		int[] rowBlockCount = new int[g.length];
+		for (int i = 0; i < g.length; i++)
+			for (int j = 0; j < g[0].length; j++)
+				if (g[i][j] == 1)
+					rowBlockCount[i]++;
+		
+		int[] seenBlockInCol = new int[g[0].length];
+		
+		for (int i = 0; i < g.length; i++)
 		{
-			boolean gotCavern = false;
-			for (int i = 0; i < g.length; i++)
+			//boolean gotCavern = false;
+			for (int j = 0; j < g[0].length; j++)
 			{
 				if (g[i][j] == 0)
 				{
-					if (blockAbove(g, i, j))
+					if (blockAbove(g, i, j, seenBlockInCol))
 						penalty++;
-					else if (insideCavern(g, i, j) && !gotCavern)
+					else if (insideCavern(g, i, j, seenBlockInCol, rowBlockCount))
 					{
 						penalty++;
 						//penalty2++;
@@ -247,6 +255,8 @@ public class TetrisHeuristicAI implements TetrisAI {
 					}
 					continue;
 				}
+				else if (!rowComplete(g, i, rowBlockCount))
+					seenBlockInCol[j] = 1;
 				
 				int scale = 5; //numBlocks / g[0].length; // want blocks to be within 3 of avg.
 				
@@ -262,7 +272,7 @@ public class TetrisHeuristicAI implements TetrisAI {
 		// bonuses for rowCompletion
 		int rowsCompleted = 0;
 		for (int i = 0; i < g.length; i++)
-			if (rowComplete(g, i))
+			if (rowComplete(g, i, rowBlockCount))
 			{
 				rowsCompleted++;
 				//sum += (g.length - i) * (g.length - i) * numBlocks;
@@ -289,42 +299,32 @@ public class TetrisHeuristicAI implements TetrisAI {
 		return sum;
 	}
 	
-	protected boolean rowComplete(int[][] g, int row)
+	protected boolean rowComplete(int[][] g, int row, int[] rowBlockCount)
 	{
-		for (int i = 0; i < g[0].length; i++)
-			if (g[row][i] == 0)
-				return false;
-		return true;
+		return rowBlockCount[row] == g.length;
 	}
 	
-	protected boolean blockAbove(int[][] g, int row, int col)
+	protected boolean blockAbove(int[][] g, int row, int col, int[] seenBlockInCol)
 	{
-		for (int i = row; i >= 0; i--)
-		{
-			if (g[i][col] == 1 && !rowComplete(g, i))
-				return true;
-		}
-		return false;
+		return seenBlockInCol[col] == 1;
 	}
 	
-	protected boolean insideCavern(int[][] g, int row, int col)
+	protected boolean insideCavern(int[][] g, int row, int col, int[] seenBlockInCol, int[] rowBlockCount)
 	{
-		if (blockAbove(g, row, col))
+		if (blockAbove(g, row, col, seenBlockInCol))
 			return false;// then this is just a hole
 		
-		for (int i = row - 3; i >= row - 3; i--) // only the 3rd block to the left and right
-		{
-			for (int j = col-1; j <= col+1; j++)
-				if (board.isValid(new Location(i, j)))
-				{
-					if (j == col && g[i][j] == 1 && !rowComplete(g, i))
-						return false; // is not part of a cavern
-					if (j != col && g[i][j] == 0 && !blockAbove(g, i, j))
-						return false; // is not part of a cavern (unless very unlucky)
-				}
-				else if (i < 0)
-					return false;
-		}
+		int i = row - 3; // only the 3rd block to the left and right
+		for (int j = col-1; j <= col+1; j++)
+			if (board.isValid(new Location(i, j)))
+			{
+				if (j == col && g[i][j] == 1 && !rowComplete(g, i, rowBlockCount))
+					return false; // is not part of a cavern
+				if (j != col && g[i][j] == 0 && !blockAbove(g, i, j, seenBlockInCol))
+					return false; // is not part of a cavern (unless very unlucky)
+			}
+			else if (i < 0)
+				return false;
 		return true;
 	}
 

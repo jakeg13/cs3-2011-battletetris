@@ -123,7 +123,7 @@ public class TetrisControl implements ArrowListener, KeyListener
 		player.setOpponent(opp);
 		opp.setOpponent(player);
 		
-		new TetrisHeuristicAI2(opp);
+		//new TetrisHeuristicAI2(opp);
 		//new TetrisHeuristicAI2(player);
 
 
@@ -133,8 +133,13 @@ public class TetrisControl implements ArrowListener, KeyListener
 		frame = new JFrame();
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		JPanel p = new JPanel();
-		p.setLayout(new GridLayout(1, 2));
+		p.setLayout(new GridLayout(1, 3));
 		p.add(opp.getPanel());
+		
+		DrawImage welcomePanel = new DrawImage();
+		welcomePanel.setImage(PowerUp.POWERUP_WELCOME);
+		p.add(welcomePanel);
+		
 		p.add(player.getPanel());
 		frame.setContentPane(p);
 		//frame.getContentPane().add(play.getPanel());
@@ -144,7 +149,7 @@ public class TetrisControl implements ArrowListener, KeyListener
 		frame.setVisible(true);
 		
 		//frame.setLocation(450,100);
-		frame.setSize(500, 700);
+		//frame.setSize(900, 700);
 		frame.setLocation(300, 20);
 
 		update();
@@ -152,12 +157,21 @@ public class TetrisControl implements ArrowListener, KeyListener
 	}
 	public void update()
 	{
+		String one = "Player";
+		String two = "Player";
+		if (player.ai != null)
+			two = "AI";
+		if (opp.ai != null)
+			one = "AI";
+		
 		if (paused)
-			frame.setTitle("Battle Tetris! Left: " + opp.getLevel() + "." + opp.getScore() +
-				" Right: " + player.getLevel() + "." + player.getScore() + " PAUSED");
+			frame.setTitle("Battle Tetris! " + one + ": " + opp.getLevel() + "." + opp.getScore() +
+				" " + two + ": " + player.getLevel() + "." + player.getScore() + " PAUSED");
 		else
-			frame.setTitle("Battle Tetris! Left: " + opp.getLevel() + "." + opp.getScore() +
-				" Right: " + player.getLevel() + "." + player.getScore());
+			frame.setTitle("Battle Tetris! " + one + ": " + opp.getLevel() + "." + opp.getScore() +
+					" " + two + ": " + player.getLevel() + "." + player.getScore());
+		
+		
 /*		if(paused)
 			play.setTitle("Left: "+player.counter()/TriadTowers.DROPRATIO+" TriadTowers Input Module: "+"Right: "+opp.counter()/TriadTowers.DROPRATIO+" Paused!");
 		else
@@ -455,6 +469,18 @@ public class TetrisControl implements ArrowListener, KeyListener
 				break;
 			case KeyEvent.VK_ENTER:
 				listener.enterPressed();
+				break;
+			case KeyEvent.VK_I:
+				if (opp.ai == null)
+					opp.ai = new TetrisHeuristicAI(opp);
+				else
+					opp.ai = null;
+				break;
+			case KeyEvent.VK_O:
+				if (player.ai == null)
+					player.ai = new TetrisHeuristicAI(player);
+				else
+					player.ai = null;
 				break;
 			case KeyEvent.VK_P:
 				listener.pPressed();
