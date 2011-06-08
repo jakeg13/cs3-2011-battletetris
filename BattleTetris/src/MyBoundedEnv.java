@@ -99,6 +99,17 @@ public class MyBoundedEnv
 	}
 	public void add(Locatable a)
 	{
+		for(int row=0;row<theGrid.length;row++)
+		{
+			for(int col=0;col<theGrid[0].length;col++)
+			{
+				if(theGrid[row][col]!=null && theGrid[row][col] == a)
+				{
+					theGrid[row][col] = null; // avoid repeats...
+					System.out.println("needed to remove, already existing");
+				}
+			}
+		}
 		int row=a.location().row();
 		int col=a.location().col();
 		theGrid[row][col]=a;

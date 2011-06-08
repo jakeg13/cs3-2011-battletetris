@@ -238,27 +238,27 @@ public class TetrisHeuristicAI implements TetrisAI {
 		
 		int[] seenBlockInCol = new int[g[0].length];
 		
+		int[] gotCavern = new int[g[0].length];
 		for (int i = 0; i < g.length; i++)
 		{
-			//boolean gotCavern = false;
 			for (int j = 0; j < g[0].length; j++)
 			{
 				if (g[i][j] == 0)
 				{
 					if (blockAbove(g, i, j, seenBlockInCol))
 						penalty++;
-					else if (insideCavern(g, i, j, seenBlockInCol, rowBlockCount))
+					else if (insideCavern(g, i, j, seenBlockInCol, rowBlockCount) && gotCavern[j] != 1)
 					{
-						penalty++;
 						//penalty2++;
-						//gotCavern = true;
+						//gotCavern[j] = 1;
+						penalty++;
 					}
 					continue;
 				}
 				else if (!rowComplete(g, i, rowBlockCount))
 					seenBlockInCol[j] = 1;
 				
-				int scale = 5; //numBlocks / g[0].length; // want blocks to be within 3 of avg.
+				int scale = 0;//5; //numBlocks / g[0].length; // want blocks to be within 3 of avg.
 				
 				sum += (i-scale)*(i-scale)*(i-scale);
 			}
@@ -294,14 +294,14 @@ public class TetrisHeuristicAI implements TetrisAI {
 				}
 			}
 		
-		sum += rowsCompleted * rowsCompleted * numBlocks * numBlocks;
+		sum += rowsCompleted * rowsCompleted * 3000; // note that you get less than if you make a hole
 		
 		return sum;
 	}
 	
 	protected boolean rowComplete(int[][] g, int row, int[] rowBlockCount)
 	{
-		return rowBlockCount[row] == g.length;
+		return rowBlockCount[row] == g[0].length;
 	}
 	
 	protected boolean blockAbove(int[][] g, int row, int col, int[] seenBlockInCol)

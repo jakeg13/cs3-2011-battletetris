@@ -362,12 +362,14 @@ public class Tetris implements ArrowListener
 	{
 		if(rad!=null)
 		{
-			if(rad.translate(1,0))
-			{
-				display.showBlocks();
-				rowsMoved++;
-			}
-			frame.setTitle("Tetris! Level: "+level+" Score: "+score);
+		if(rad.translate(1,0))
+		{
+			display.showBlocks();
+			rowsMoved++;
+			score+=level;
+			if(score-(level*level*100)>0)
+				increaseLevel();
+		}
 		}
 	}
 	public void pPressed()
