@@ -37,65 +37,39 @@ public class TetrisControl implements ArrowListener, KeyListener
 	public static int INTERVAL = 50; // ms
 
 	private ArrowListener listener = this;
-	
+
 	private Tetris player;
 	private Tetris opp;
 	private BlockDisplay play;
 	private boolean paused;
-	private boolean started=false;
 	private int startTime=0;
-	
+
 	private JFrame frame;
-	
+
+	// Create a Tetris Control instance, which calls run();
+	// After the game ends, continuously wait 10 seconds before restarting and calling run() again
+	public static void main(String[] args)
+	{
+		TetrisControl game=new TetrisControl(true);
+		while(true)
+		{
+			try
+			{
+				Thread.sleep(10000);
+			}
+			catch(Exception e)
+			{
+			}
+			game.restart();
+			game.run();
+		}
+	}
+
 	public TetrisControl()
 	{
-		MyBoundedEnv env=new MyBoundedEnv(1,9);
-		Block temp=null;
-		for(int i=0;i<env.numCols();i++)
-		{
-			if(i%4==0)
-				temp=new Block(Color.red);
-			if(i%4==1)
-				temp=new Block(Color.green);
-			if(i%4==2)
-				temp=new Block(Color.blue);
-			if(i%4==3)
-				temp=new Block(Color.yellow);
-			temp.setLocation(new Location(0,i));
-			env.add(temp);
-		}
-		opp=new Tetris(1);
-		opp.setLocationEnvTop(50,0);
-		opp.setLocationEnvBottom(50,160);
-		player=new Tetris(1);
-		player.setLocationEnvTop(800,0);
-		player.setLocationEnvBottom(800,160);
-		player.setOpponent(opp);
-		opp.setOpponent(player);
-
-
-		play=new JPanelBlockDisplay(env);
-		play.setArrowListener(this);
-		
-		frame = new JFrame();
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		JPanel p = new JPanel();
-		p.setLayout(new GridLayout(1, 2));
-		p.add(opp.getPanel());
-		p.add(player.getPanel());
-		frame.setContentPane(p);
-		//frame.getContentPane().add(play.getPanel());
-		frame.addKeyListener(this);
-		
-		frame.pack();
-		frame.setVisible(true);
-		
-		frame.setLocation(450,100);
-
-		update();
-		run();
+		this(false);
 	}
-	public TetrisControl(int b)
+	public TetrisControl(boolean b)
 	{
 		MyBoundedEnv env=new MyBoundedEnv(1,9);
 		Block temp=null;
@@ -112,43 +86,47 @@ public class TetrisControl implements ArrowListener, KeyListener
 			temp.setLocation(new Location(0,i));
 			env.add(temp);
 		}
-		opp=new Tetris(1);
+		opp=new Tetris(true);
 		opp.setLocationEnvTop(50,0);
 		opp.setLocationEnvBottom(50,160);
-		player=new Tetris(1);
+		player=new Tetris(true);
 		player.setLocationEnvTop(800,0);
 		player.setLocationEnvBottom(800,160);
 		player.setOpponent(opp);
 		opp.setOpponent(player);
-		
-		//new TetrisHeuristicAI2(opp);
-		//new TetrisHeuristicAI2(player);
 
 
 		play=new JPanelBlockDisplay(env);
 		play.setArrowListener(this);
-		
+
 		frame = new JFrame();
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		JPanel p = new JPanel();
 		p.setLayout(new GridLayout(1, 3));
 		p.add(opp.getPanel());
-		
-		DrawImage welcomePanel = new DrawImage();
-		welcomePanel.setImage(PowerUp.POWERUP_WELCOME);
-		p.add(welcomePanel);
-		
+
+		if (b)
+		{
+			DrawImage welcomePanel = new DrawImage();
+			welcomePanel.setImage(PowerUp.POWERUP_WELCOME);
+			p.add(welcomePanel);
+		}
+
 		p.add(player.getPanel());
 		frame.setContentPane(p);
-		//frame.getContentPane().add(play.getPanel());
 		frame.addKeyListener(this);
-		
+
 		frame.pack();
 		frame.setVisible(true);
-		
-		//frame.setLocation(450,100);
-		//frame.setSize(900, 700);
-		frame.setLocation(300, 20);
+
+		if (b)
+		{
+			frame.setLocation(300, 20);
+		}
+		else
+		{
+			frame.setLocation(450,100);
+		}
 
 		update();
 		run();
@@ -161,21 +139,17 @@ public class TetrisControl implements ArrowListener, KeyListener
 			two = "AI";
 		if (opp.ai != null)
 			one = "AI";
-		
+
 		if (paused)
 			frame.setTitle("Battle Tetris! " + one + ": " + opp.getLevel() + "." + opp.getScore() +
-				" " + two + ": " + player.getLevel() + "." + player.getScore() + " PAUSED");
+			               " " + two + ": " + player.getLevel() + "." + player.getScore() + " PAUSED");
 		else
 			frame.setTitle("Battle Tetris! " + one + ": " + opp.getLevel() + "." + opp.getScore() +
-					" " + two + ": " + player.getLevel() + "." + player.getScore());
-		
-		
-/*		if(paused)
-			play.setTitle("Left: "+player.counter()/TriadTowers.DROPRATIO+" TriadTowers Input Module: "+"Right: "+opp.counter()/TriadTowers.DROPRATIO+" Paused!");
-		else
-			play.setTitle("Left: "+player.counter()/TriadTowers.DROPRATIO+" TriadTowers Input Module: "+"Right: "+opp.counter()/TriadTowers.DROPRATIO);
-*/	}
-	
+			               " " + two + ": " + player.getLevel() + "." + player.getScore());
+
+
+	}
+
 	public static void pause(int wait)
 	{
 		try
@@ -191,11 +165,10 @@ public class TetrisControl implements ArrowListener, KeyListener
 		paused=true;
 		player.pPressed();
 		opp.pPressed();
-		started = true;
 		startTime=0;
 		boolean pNotLost=true;
 		boolean oNotLost=true;
-		
+
 		frame.setTitle("Battle Tetris!");
 		while(pNotLost&&oNotLost)
 		{
@@ -204,12 +177,8 @@ public class TetrisControl implements ArrowListener, KeyListener
 				update();
 			else
 			{
-				started=true;
-				
 				pNotLost=player.notLost();
 				oNotLost=opp.notLost();
-//				player.updateAll();
-//				opp.updateAll();
 			}
 		}
 		String a;
@@ -218,7 +187,6 @@ public class TetrisControl implements ArrowListener, KeyListener
 			a="Left Side Player Wins!";
 			opp.nullRad();
 			player.nullRad();
-//			opp.update();
 			System.out.println("\n\n"+a);
 		}
 		else
@@ -226,7 +194,6 @@ public class TetrisControl implements ArrowListener, KeyListener
 			a="Right Side Player Wins!";
 			player.nullRad();
 			opp.nullRad();
-//			player.update();
 			System.out.println("\n\n"+a);
 		}
 		frame.setTitle("Battle Tetris! " + a);
@@ -246,7 +213,7 @@ public class TetrisControl implements ArrowListener, KeyListener
 			else
 			{
 				int timeWait=INTERVAL;
-				
+
 				// As time passes, the game goes faster.
 				int factor = 10;
 				if(startTime>=60000)
@@ -259,7 +226,7 @@ public class TetrisControl implements ArrowListener, KeyListener
 					factor=6;
 				if(startTime>=300000)
 					factor=5;
-				
+
 				player.act();
 				opp.act();
 
@@ -287,22 +254,17 @@ public class TetrisControl implements ArrowListener, KeyListener
 		{
 		}
 	}
-	
+
 	/* Reset the game boards */
 	public void restart()
 	{
-		started=false;
 		player.setOpponent(opp);
 		opp.setOpponent(player);
 		player.restart();
 		opp.restart();
-		//player.updateAll();
-		//opp.updateAll();
 		startTime=0;
-		//player.setDefense(true);
-		//opp.setDefense(true);
 	}
-	
+
 
 	public void leftPressed()
 	{
@@ -327,7 +289,7 @@ public class TetrisControl implements ArrowListener, KeyListener
 	public void upPressed()
 	{
 		if(!paused)
-				player.upPressed();
+			player.upPressed();
 	}
 	public void downPressed()//unused as of the 3rd update
 	{
@@ -341,36 +303,24 @@ public class TetrisControl implements ArrowListener, KeyListener
 		player.pPressed();
 		opp.pPressed();
 	}
-	public void spacePressed()
-	{
-		if(!started)
-		{
-			//spacePressed=true;
-			//opp.penalty();
-		}
-	}
-	public void enterPressed()
-	{
-		if(!started)
-		{
-			//enterPressed=true;
-			//player.penalty();
-		}
-	}
+	
+	public void spacePressed() { }
+	public void enterPressed() { }
+
 	public void qPressed()
 	{
 		if(!paused)
-		opp.commaPressed();
+			opp.commaPressed();
 	}
 	public void ePressed()
 	{
 		if(!paused)
-		opp.periodPressed();
+			opp.periodPressed();
 	}
 	public void wPressed()
 	{
 		if(!paused)
-				opp.upPressed();
+			opp.upPressed();
 	}
 	public void sPressed()//unused as of the 3rd update
 	{
@@ -380,12 +330,12 @@ public class TetrisControl implements ArrowListener, KeyListener
 	public void aPressed()
 	{
 		if(!paused)
-		opp.leftPressed();
+			opp.leftPressed();
 	}
 	public void dPressed()
 	{
 		if(!paused)
-		opp.rightPressed();
+			opp.rightPressed();
 	}
 
 	public void downEnd()
@@ -412,25 +362,6 @@ public class TetrisControl implements ArrowListener, KeyListener
 			opp.downStart();
 	}
 
-	// Create a Tetris Control instance, which calls run();
-	// After the game ends, continuously wait 10 seconds before restarting and calling run() again
-	public static void main(String[] args)
-	{
-		TetrisControl game=new TetrisControl(1);
-		while(true)
-		{
-			try
-			{
-				Thread.sleep(10000);
-			}
-			catch(Exception e)
-			{
-			}
-			game.restart();
-			game.run();
-		}
-	}
-	
 	@Override
 	public final void keyPressed(KeyEvent e)
 	{
@@ -438,7 +369,7 @@ public class TetrisControl implements ArrowListener, KeyListener
 		{
 			return;
 		}
-		
+
 		try
 		{
 			Thread.sleep(10);
@@ -515,7 +446,7 @@ public class TetrisControl implements ArrowListener, KeyListener
 		{
 			return;
 		}
-		
+
 		try
 		{
 			Thread.sleep(10);
@@ -539,6 +470,4 @@ public class TetrisControl implements ArrowListener, KeyListener
 	{
 		// Do nothing
 	}
-
-	
 }
