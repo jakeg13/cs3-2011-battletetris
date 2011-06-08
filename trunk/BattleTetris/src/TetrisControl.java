@@ -227,8 +227,7 @@ public class TetrisControl implements ArrowListener, KeyListener
 				if(startTime>=300000)
 					factor=5;
 
-				player.act();
-				opp.act();
+
 
 				// the Tetris board only moves every 'factor' INTERVALs of time.
 				if (startTime % (factor * INTERVAL) == 0)
@@ -243,6 +242,11 @@ public class TetrisControl implements ArrowListener, KeyListener
 						opp.play();
 						player.play();
 					}
+				}
+				else
+				{
+					player.act();
+					opp.act();
 				}
 				update();
 
