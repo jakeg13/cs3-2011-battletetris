@@ -65,27 +65,18 @@ public class JPanelBlockDisplay extends BaseBlockDisplay
 	{
 		this.special = special;
 		this.board = board;
-		
-		frame = new JPanel();//new JFrame();
-        //frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        
+
+		frame = new JPanel();
+
 		grid = new DrawImage[board.numRows()][board.numCols()];
 
-        //Schedule a job for the event-dispatching thread:
-        //creating and showing this application's GUI.
-        //SwingUtilities.invokeLater(new Runnable()
-        //{
-        //    public void run()
-        //    {
-                createAndShowGUI();
-        //    }
-        //});
+		createAndShowGUI();
 
 		//Wait until display has been drawn
-        try
-        {
-        	while (frame == null || !frame.isVisible())
-        		Thread.sleep(1);
+		try
+		{
+			while (frame == null || !frame.isVisible())
+				Thread.sleep(1);
 		}
 		catch(InterruptedException e)
 		{
@@ -94,29 +85,26 @@ public class JPanelBlockDisplay extends BaseBlockDisplay
 		}
 	}
 
-    /**
-     * Create the GUI and show it.  For thread safety,
-     * this method should be invoked from the
-     * event-dispatching thread.
-     */
-    private void createAndShowGUI()
-    {
-                //Create and set up the window.
-        //frame = new JFrame();
-        //frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        if(!special)
-        	frame.setLayout(new GridLayout(board.numRows(), board.numCols()));
-        else
-        	frame.setLayout(new GridLayout(board.numRows()-1, board.numCols()));
-        frame.addKeyListener(this);
+	/**
+	 * Create the GUI and show it.  For thread safety,
+	 * this method should be invoked from the
+	 * event-dispatching thread.
+	 */
+	private void createAndShowGUI()
+	{
+		//Create and set up the window.
+		if(!special)
+			frame.setLayout(new GridLayout(board.numRows(), board.numCols()));
+		else
+			frame.setLayout(new GridLayout(board.numRows()-1, board.numCols()));
+		frame.addKeyListener(this);
 
 		//Create each square component.
-        for (int row = 0; row < grid.length; row++)
-        {
-        	for (int col = 0; col < grid[row].length; col++)
-        	{
+		for (int row = 0; row < grid.length; row++)
+		{
+			for (int col = 0; col < grid[row].length; col++)
+			{
 				grid[row][col] = new DrawImage();
-				//grid[row][col].setBackground(Color.WHITE);
 				grid[row][col].setPreferredSize(new Dimension(BLOCKWIDTH, BLOCKHEIGHT));
 				frame.add(grid[row][col]);
 			}
@@ -125,10 +113,9 @@ public class JPanelBlockDisplay extends BaseBlockDisplay
 		//Show the board
 		showBlocks();
 
-        //Display the window.
-        //frame.pack();
-        frame.setVisible(true);
-    }
+		//Display the window
+		frame.setVisible(true);
+	}
 
 	//Redraws the board to include the pieces and border colors.
 	public void showBlocks()
@@ -144,22 +131,12 @@ public class JPanelBlockDisplay extends BaseBlockDisplay
 				if (square == null) //use a dark gray background if no block is there.
 				{
 					grid[row][col].setBackground(Color.DARK_GRAY);
-					//grid[row][col].setForeground(new Color(Color.GRAY.getRed(),Color.GRAY.getGreen(),Color.GRAY.getBlue(),200));
 					grid[row][col].setBorder(null);
 					grid[row][col].setImage(PowerUp.POWERUP_NORMAL);
 				}
 				else // the background is the block's color.
 				{
 					grid[row][col].setBackground(square.color());
-					
-					/*if (square.getPowerType() == PowerUp.POWERUP_BOMB)
-						grid[row][col].setBackground(blendColors(square.color(), Color.BLACK));
-					else if (square.getPowerType() == PowerUp.POWERUP_ANTIBOMB)
-						grid[row][col].setBackground(blendColors(square.color(), Color.WHITE));
-					else if (square.getPowerType() == PowerUp.POWERUP_SCRAMBLE)
-						grid[row][col].setBackground(Color.orange);
-					else if (square.getPowerType() == PowerUp.POWERUP_REMOVE)
-						grid[row][col].setBackground(new Color(80, 0, 0));*/
 					grid[row][col].setImage(square.getPowerType());
 
 					// the block's border varies depending on if it is active and if it is the pivot
@@ -172,7 +149,7 @@ public class JPanelBlockDisplay extends BaseBlockDisplay
 					}
 					else
 						grid[row][col].setBorder(BorderFactory.createLineBorder(square.color().darker(),3));
-					
+
 				}
 			}
 
